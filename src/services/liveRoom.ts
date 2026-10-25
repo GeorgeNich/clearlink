@@ -4,7 +4,6 @@ import type { Participant, Room, ValidateResult } from './types';
 type Signal = { description?: RTCSessionDescriptionInit; candidate?: RTCIceCandidateInit; restart?: boolean };
 type Peer = { pc: RTCPeerConnection; person: Participant; stream: MediaStream; queue: Promise<void>; candidates: RTCIceCandidateInit[]; timer?: ReturnType<typeof setTimeout> };
 type Event = { type: 'joined' | 'state'; person: Participant } | { type: 'left'; id: string } | { type: 'signal'; from: string; signal: Signal } | { type: 'chat'; person: Participant; text: string };
-export const LIVE = !new URLSearchParams(location.search).has('demo');
 
 /** One peer connection per participant. Server handles membership/signalling and transient chat only. */
 export class LiveRoomService {

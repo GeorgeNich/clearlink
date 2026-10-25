@@ -43,8 +43,8 @@ export function createClearlinkServer({ iceServers = readIceServers(), sessionTT
         const path = resolve(root, '.' + decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname));
         if (!path.startsWith(root + '/')) return json(res, 404, {});
         let data;
-        try { data = await readFile(path); } catch { if (url.pathname !== '/test') return json(res, 404, {}); data = await readFile(resolve(root, 'index.html')); }
-        res.writeHead(200, { 'Content-Type': ({ '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg' })[extname(path)] || (url.pathname === '/test' ? 'text/html' : 'application/octet-stream'), 'X-Content-Type-Options': 'nosniff' });
+        try { data = await readFile(path); } catch { return json(res, 404, {}); }
+        res.writeHead(200, { 'Content-Type': ({ '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg' })[extname(path)] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff' });
         return res.end(req.method === 'HEAD' ? undefined : data);
       }
       // No CORS. Browsers must use the app's own origin, including through a reverse proxy.

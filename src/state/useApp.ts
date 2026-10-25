@@ -1,15 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cleanCode, codeProblem, formatCode } from '../lib/code';
-import { MockMediaService } from '../services/mockMedia';
-import { DEVICE_OPTIONS } from '../services/mockMedia';
 import { BrowserMediaService } from '../services/browserMedia';
-import { LIVE, LiveRoomService } from '../services/liveRoom';
-import { MockRoomService } from '../services/mockRoom';
-import { DIAG_KEYS, runSimulatedCheck } from '../services/mockDiagnostics';
-import type { DiagKey, DiagScenario, DiagStatus } from '../services/mockDiagnostics';
+import { LiveRoomService } from '../services/liveRoom';
 import { ShareAdapter } from '../services/shareAdapter';
 import type { ShareOutcome } from '../services/shareAdapter';
-import type { RoomScenario } from '../services/mockRoom';
 import type { DeviceKind, DeviceOptions, MediaService, Participant, PersonColor, Room } from '../services/types';
 import { NamePreference } from './namePreference';
 
@@ -17,25 +11,11 @@ export type Route =
   | 'welcome' | 'validating' | 'check' | 'blocked' | 'connecting'
   | 'call'
   | 'ended'
-  | 'diag'
   | 'cannot' | 'notfound' | 'full';
 export type Intent = 'create' | 'join';
 
-/** real = your actual camera and mic; simulated = placeholders, no permission asked; blocked = pretend permission was refused. */
-export type MediaMode = 'real' | 'simulated' | 'blocked';
-
-export interface Demo { cam: MediaMode; room: RoomScenario['room']; connect: RoomScenario['connect']; present: number; remoteCams: boolean; dx: DiagScenario }
-
 export type Corner = 'tl' | 'tr' | 'bl' | 'br';
 export interface Toast { id: number; text: string }
-
-/** The people who can appear in a simulated call, in the order they arrive. */
-export const POOL: Pick<Participant, 'id' | 'displayName' | 'avatarColor'>[] = [
-  { id: 'jr', displayName: 'Priya Raman', avatarColor: 'rose' },
-  { id: 'am', displayName: 'Alex Chen', avatarColor: 'sage' },
-  { id: 'er', displayName: 'Sam Taylor', avatarColor: 'dusk' },
-  { id: 'lm', displayName: 'Jordan Lee', avatarColor: 'plum' },
-];
 
 export type ConnState = 'healthy' | 'weak' | 'reconnecting' | 'failed';
 
@@ -49,7 +29,6 @@ export type Panel = 'chat' | 'invite' | 'settings' | null;
 /** In memory only. Delivered to whoever is present when it is sent; never replayed to latecomers. */
 export interface ChatMessage { id: number; fromLocal: boolean; name: string; color: PersonColor; text: string; time: string }
 
-const LINES = ['Lovely to see everyone!', 'Coffee is ready.', 'Can you hear me okay?', 'Back in two minutes.', 'Mum says hello!', 'The dog wants to say hi.'];
 const clock = () => { const d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); };
 
 export interface ShareMessage { text: string; ok: boolean }
@@ -76,14 +55,12 @@ export interface AppState {
   moreOpen: boolean;
   sharing: boolean;
   conn: ConnState;
-  diag: Record<DiagKey, DiagStatus>;
-  diagRunning: boolean;
   rejoining: boolean;
   lastRoom: LastRoom | null;
   endedDuration: string;
   devices: Record<DeviceKind, string>;
   deviceOptions: DeviceOptions;
-  /** Your own camera and microphone stream. Null when simulated or off. */
+  /** Your own camera and microphone stream. Null when off. */
   localStream: MediaStream | null;
   screenStream: MediaStream | null;
   /** A plain-language problem with your camera or microphone, shown on the pre-call screens. */
@@ -93,27 +70,19 @@ export interface AppState {
   unread: number;
   draft: string;
   shareMsg: ShareMessage | null;
-  demo: Demo;
 }
 
-/** Remote people arrive with the second person muted, so the muted state is visible straight away. */
-const makeRemote = (p: (typeof POOL)[number], i: number, cams: boolean): Participant => ({ ...p, micEnabled: i !== 1, cameraEnabled: cams });
-
-const idleDiag = (): Record<DiagKey, DiagStatus> => ({ camera: 'idle', microphone: 'idle', direct: 'idle', relay: 'idle' });
-
-/** /test (or #test) opens the connection check directly. */
-const opensDiagnostics = () => location.pathname.replace(/\/+$/, '') === '/test' || location.hash.replace(/^#\/?/, '') === 'test';
+const noDevices = (): DeviceOptions => ({ camera: [], microphone: [], speaker: [] });
 
 const initial = (): AppState => {
   const name = NamePreference.get();
   return {
-    route: opensDiagnostics() ? 'diag' : 'welcome', intent: 'create', codeInput: '', codeError: '', pendingCode: '',
+    route: 'welcome', intent: 'create', codeInput: '', codeError: '', pendingCode: '',
     name, remembered: name, micOn: true, camOn: true, blockedNote: '', room: null,
-    startedAt: 0, remotes: [], speakingId: null, corner: 'tr', selfHidden: false, toasts: [], panel: null, moreOpen: false, sharing: false, conn: 'healthy', diag: idleDiag(), diagRunning: false, rejoining: false, lastRoom: null, endedDuration: '00:00',
-    devices: { camera: DEVICE_OPTIONS.camera[0].id, microphone: DEVICE_OPTIONS.microphone[0].id, speaker: DEVICE_OPTIONS.speaker[0].id },
-    deviceOptions: DEVICE_OPTIONS, localStream: null, screenStream: null, mediaNote: '',
+    startedAt: 0, remotes: [], speakingId: null, corner: 'tr', selfHidden: false, toasts: [], panel: null, moreOpen: false, sharing: false, conn: 'healthy', rejoining: false, lastRoom: null, endedDuration: '00:00',
+    devices: { camera: '', microphone: '', speaker: '' },
+    deviceOptions: noDevices(), localStream: null, screenStream: null, mediaNote: '',
     spotlightId: null, messages: [], unread: 0, draft: '', shareMsg: null,
-    demo: { cam: 'real', room: 'ok', connect: 'ok', present: 0, remoteCams: false, dx: { camera: true, microphone: true, direct: false, relay: true } },
   };
 };
 
@@ -124,18 +93,16 @@ export function useApp() {
   const set = useCallback((p: Partial<AppState>) => setSt(s => ({ ...s, ...p })), []);
 
   const real = useRef(new BrowserMediaService()).current;
-  const mock = useRef(new MockMediaService()).current;
-  const pick = (): MediaService => (S.current.demo.cam === 'real' ? real : mock);
+  const pick = (): MediaService => real;
   const live = useRef(new LiveRoomService()).current;
-  const releaseAll = () => { live.leave(); real.release(); mock.release(); };
+  const releaseAll = () => { live.leave(); real.release(); };
   const mediaState = (m: MediaService) => ({ localStream: m.stream(), deviceOptions: m.devices(), devices: m.selected() });
   // Camera light off and tracks stopped when the app closes or unmounts.
   useEffect(() => {
-    const release = () => { nav.current++; live.leave(); real.release(); mock.release(); };
+    const release = () => { nav.current++; live.leave(); real.release(); };
     window.addEventListener('pagehide', release);
     return () => { release(); window.removeEventListener('pagehide', release); };
-  }, [real, mock, live]);
-  const rooms = useRef(new MockRoomService()).current;
+  }, [real, live]);
   // Each navigation bumps this so a slow, superseded request can't move the user.
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const toastId = useRef(0);
@@ -144,11 +111,6 @@ export function useApp() {
   const nav = useRef(0);
   const guard = () => ++nav.current;
   const stale = (token: number) => token !== nav.current;
-
-  useEffect(() => {
-    mock.permissionScenario = st.demo.cam === 'blocked' ? 'blocked' : 'allowed';
-    rooms.scenario = { room: st.demo.room, connect: st.demo.connect, present: st.demo.present };
-  }, [st.demo, mock, rooms]);
 
   useEffect(() => {
     live.onPeople = remotes => setSt(s => s.route === 'call' ? ({ ...s, remotes,
@@ -161,7 +123,7 @@ export function useApp() {
     real.onShareEnded = () => set({ sharing: false, screenStream: null });
   }, [live, real, set]);
   useEffect(() => {
-    if (!LIVE || st.route !== 'call') return;
+    if (st.route !== 'call') return;
     const audio = st.localStream?.getAudioTracks() ?? [];
     const video = (st.sharing ? st.screenStream : st.localStream)?.getVideoTracks() ?? [];
     live.updateMedia(new MediaStream([...audio, ...video]), st.micOn, st.camOn || st.sharing);
@@ -195,11 +157,9 @@ export function useApp() {
         const formatted = formatCode(cleanCode(code));
         set({ intent: 'join', pendingCode: formatted, route: 'validating', room: null, rejoining, localStream: null, screenStream: null, sharing: false });
         let result;
-        try { result = await (LIVE ? live : rooms).validateRoom(formatted); }
+        try { result = await live.validateRoom(formatted); }
         catch { if (!stale(t)) set({ route: 'cannot' }); return; }
         if (stale(t)) return;
-        // A room closes when it is empty, so rejoining only works if someone was still there when you left.
-        if (!LIVE && rejoining && result === 'ok' && !S.current.lastRoom?.remotes.length) result = 'missing';
         if (result === 'missing') return set({ route: 'notfound' });
         if (result === 'full') return set({ route: 'full' });
         void enterCheck(t);
@@ -234,13 +194,12 @@ export function useApp() {
         NamePreference.set(name);
         const t = guard();
         set({ name, remembered: name, route: 'connecting' });
-        const res = LIVE ? await live.enter(s.intent, s.pendingCode, name, pick().stream(), s.micOn, s.camOn) : s.intent === 'create' ? await rooms.createRoom() : await rooms.joinRoom(s.pendingCode, name);
+        const res = await live.enter(s.intent, s.pendingCode, name, pick().stream(), s.micOn, s.camOn);
         if (stale(t)) return;
         if (res.status === 'ok') {
-          const others = 'others' in res ? (res.others as number) : 0;
           return set({
             route: 'call', room: res.room, startedAt: Date.now(), shareMsg: null, speakingId: null, selfHidden: false, toasts: [], panel: null, moreOpen: false, sharing: false, spotlightId: null, messages: [], unread: 0, draft: '',
-            remotes: LIVE ? live.people() : s.rejoining && S.current.lastRoom ? S.current.lastRoom.remotes.map(r => ({ ...r })) : POOL.slice(0, others).map((p, i) => makeRemote(p, i, S.current.demo.remoteCams)),
+            remotes: live.people(),
             conn: 'healthy',
           });
         }
@@ -260,36 +219,11 @@ export function useApp() {
       shareInvite: async () => { const r = S.current.room; if (r) set({ shareMsg: shareMessage('invite', await ShareAdapter.shareInvite(r)) }); },
       copyLink: async () => { const r = S.current.room; if (r) set({ shareMsg: shareMessage('link', await ShareAdapter.copyLink(r)) }); },
       copyCode: async () => { const r = S.current.room; if (r) set({ shareMsg: shareMessage('code', await ShareAdapter.copyCode(r)) }); },
-      // Simulated arrivals and departures. Real ones will come from the room service.
-      setRemoteCount: (n: number) => {
-        const s = S.current;
-        if (s.route !== 'call') return;
-        const target = Math.max(0, Math.min(POOL.length, n));
-        const toasts: string[] = [];
-        let remotes = s.remotes;
-        while (remotes.length < target) {
-          const p = POOL[remotes.length];
-          remotes = [...remotes, makeRemote(p, remotes.length, s.demo.remoteCams)];
-          toasts.push(p.displayName + ' joined');
-        }
-        while (remotes.length > target) {
-          toasts.push(remotes[remotes.length - 1].displayName + ' left');
-          remotes = remotes.slice(0, -1);
-        }
-        set({ remotes, spotlightId: remotes.some(r => r.id === s.spotlightId) ? s.spotlightId : null, speakingId: remotes.some(r => r.id === s.speakingId) ? s.speakingId : null });
-        toasts.forEach(t => a.toast(t));
-      },
       toast: (text: string) => {
         const id = ++toastId.current;
         setSt(s => ({ ...s, toasts: [...s.toasts, { id, text }].slice(-3) }));
         timers.current.push(setTimeout(() => setSt(s => ({ ...s, toasts: s.toasts.filter(t => t.id !== id) })), 3500));
       },
-      nextSpeaker: () => setSt(s => {
-        // The self-view has no speaking glow, so you only get a turn when you are alone on the stage.
-        const ids: (string | null)[] = [null, ...(s.remotes.length ? s.remotes.map(r => r.id) : ['local'])];
-        return { ...s, speakingId: ids[(ids.indexOf(s.speakingId) + 1) % ids.length] };
-      }),
-      setRemoteCams: (on: boolean) => setSt(s => ({ ...s, demo: { ...s.demo, remoteCams: on }, remotes: s.remotes.map(r => ({ ...r, cameraEnabled: on })) })),
       // Layout, panel and chat are independent: opening one never resets another.
       togglePanel: (p: Exclude<Panel, null>) => setSt(s => ({ ...s, panel: s.panel === p ? null : p, moreOpen: false, unread: p === 'chat' && s.panel !== 'chat' ? 0 : s.unread, shareMsg: null })),
       closePanel: () => set({ panel: null }),
@@ -306,26 +240,8 @@ export function useApp() {
         });
       },
       rejoin: () => { const lr = S.current.lastRoom; if (lr) void a.openInvite(lr.room.code, true); },
-      setConn: (conn: ConnState) => { if (S.current.route === 'call') set({ conn }); },
-      // Retry shows reconnecting, then recovers. Mic and camera stay exactly as you left them.
-      retryConn: () => {
-        if (LIVE) return live.retry();
-        set({ conn: 'reconnecting' });
-        timers.current.push(setTimeout(() => setSt(s => (s.route === 'call' && s.conn === 'reconnecting' ? { ...s, conn: 'healthy' } : s)), 1800));
-      },
-      runDiag: () => {
-        if (S.current.diagRunning) return;
-        set({ diagRunning: true, diag: idleDiag() });
-        DIAG_KEYS.forEach((k, i) => {
-          timers.current.push(setTimeout(() => setSt(s => ({ ...s, diag: { ...s.diag, [k]: 'running' } })), i * 900));
-          timers.current.push(setTimeout(async () => {
-            const ok = await runSimulatedCheck(k, S.current.demo.dx);
-            setSt(s => ({ ...s, diag: { ...s.diag, [k]: ok ? 'pass' : 'fail' }, diagRunning: i < DIAG_KEYS.length - 1 }));
-          }, i * 900 + 50));
-        });
-      },
-      openDiag: () => { guard(); releaseAll(); set({ route: 'diag', diag: idleDiag(), diagRunning: false, localStream: null, screenStream: null, sharing: false }); },
-      setDx: (k: DiagKey, ok: boolean) => setSt(s => ({ ...s, demo: { ...s.demo, dx: { ...s.demo.dx, [k]: ok } } })),
+      // Retry restarts the connection search. Mic and camera stay exactly as you left them.
+      retryConn: () => { live.retry(); },
       setMore: (moreOpen: boolean) => set({ moreOpen }),
       selectDevice: async (kind: DeviceKind, id: string) => {
         const m = pick(), t = nav.current;
@@ -341,7 +257,7 @@ export function useApp() {
         try {
           await m.startScreenShare();
           if (stale(t) || S.current.route !== 'call') return m.stopScreenShare();
-          set({ sharing: true, screenStream: m === real ? real.screenStream() : null, spotlightId: null });
+          set({ sharing: true, screenStream: real.screenStream(), spotlightId: null });
         } catch { if (!stale(t)) a.toast('Screen sharing wasn’t started. You can try again from More options.'); }
       },
       stopShare: () => { pick().stopScreenShare(); set({ sharing: false, screenStream: null, moreOpen: false }); },
@@ -351,7 +267,7 @@ export function useApp() {
         if (!text || text.length > 4000) return;
         set({ draft: '' });
         try {
-          if (LIVE) await live.chat(text);
+          await live.chat(text);
           if (stale(t)) return;
           const m: ChatMessage = { id: ++msgId.current, fromLocal: true, name: s.name, color: 'amber', text, time: clock() };
           setSt(s => ({ ...s, messages: [...s.messages, m] }));
@@ -359,27 +275,15 @@ export function useApp() {
           if (!stale(t)) { setSt(s => ({ ...s, draft: s.draft || text })); a.toast('Your message wasn’t sent. Please try again.'); }
         }
       },
-      incomingChat: () => setSt(s => {
-        if (s.route !== 'call' || !s.remotes.length) return s;
-        const p = s.remotes[Math.floor(Math.random() * s.remotes.length)];
-        const m: ChatMessage = { id: ++msgId.current, fromLocal: false, name: p.displayName, color: p.avatarColor, text: LINES[Math.floor(Math.random() * LINES.length)], time: clock() };
-        return { ...s, messages: [...s.messages, m], unread: s.panel === 'chat' ? 0 : s.unread + 1 };
-      }),
       setCorner: (corner: Corner) => set({ corner }),
-      setDemo: (p: Partial<Demo>) => {
-        // Changing how the camera behaves starts from nothing: stop whatever is open.
-        if (p.cam !== undefined && p.cam !== S.current.demo.cam) { releaseAll(); set({ localStream: null }); }
-        setSt(s => ({ ...s, demo: { ...s.demo, ...p } }));
-      },
     };
     return a;
-  }, [enterCheck, rooms, set]);
+  }, [enterCheck, set]);
 
   // Invite links: #r/XXXXXXXX opens straight to validation.
   useEffect(() => {
     const onHash = () => {
       const h = location.hash.replace(/^#\/?/, '');
-      if (h === 'test' || h === 'components') { actions.openDiag(); return; }
       if (!/^r\//i.test(h)) return;
       const raw = cleanCode(h.slice(2));
       if (raw.length === 8) void actions.openInvite(raw);

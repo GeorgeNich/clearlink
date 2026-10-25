@@ -1,5 +1,4 @@
 import { Appearance } from "../state/theme";
-import { LIVE } from "../services/liveRoom";
 import { useEffect, useState } from "react";
 import type { DeviceKind } from "../services/types";
 import type { AppActions, AppState } from "../state/useApp";
@@ -10,27 +9,13 @@ const FIELDS: [DeviceKind, string][] = [
   ["speaker", "Speaker"],
 ];
 
-/** Level 0–100. Reads your real microphone when there is one, otherwise moves on its own so the meter can be seen. */
-function useMicLevel(
-  stream: MediaStream | null,
-  enabled: boolean,
-  real: boolean,
-) {
+/** Level 0–100, measured from your microphone. */
+function useMicLevel(stream: MediaStream | null, enabled: boolean) {
   const [level, setLevel] = useState(0);
   useEffect(() => {
     if (!enabled) {
       setLevel(0);
       return;
-    }
-    if (!real) {
-      const t = setInterval(
-        () =>
-          setLevel((l) =>
-            Math.round(l * 0.4 + (12 + Math.random() * 50) * 0.6),
-          ),
-        300,
-      );
-      return () => clearInterval(t);
     }
     const audio =
       stream?.getAudioTracks().filter((t) => t.readyState === "live") ?? [];
@@ -60,12 +45,12 @@ function useMicLevel(
       src.disconnect();
       void ctx.close();
     };
-  }, [stream, enabled, real]);
+  }, [stream, enabled]);
   return level;
 }
 
 export function DeviceFields({ st, a }: { st: AppState; a: AppActions }) {
-  const unsupported = LIVE && !("setSinkId" in HTMLMediaElement.prototype);
+  const unsupported = !("setSinkId" in HTMLMediaElement.prototype);
   return (
     <fieldset className="flex min-w-0 flex-col gap-3">
       <legend className="mb-3 text-sm font-semibold">Devices</legend>
@@ -108,8 +93,7 @@ export function DeviceFields({ st, a }: { st: AppState; a: AppActions }) {
   );
 }
 export function MicMeter({ st }: { st: AppState }) {
-  const real = st.demo.cam === "real";
-  const level = useMicLevel(st.localStream, st.micOn, real);
+  const level = useMicLevel(st.localStream, st.micOn);
   const shown = st.micOn ? level : 0;
   return (
     <div className="flex flex-col gap-2">
@@ -120,7 +104,7 @@ export function MicMeter({ st }: { st: AppState }) {
       </span>
       <div
         role="meter"
-        aria-label={real ? "Microphone level" : "Microphone level (simulated)"}
+        aria-label="Microphone level"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={shown}
@@ -141,9 +125,7 @@ export function SettingsPanelBody({ st, a }: { st: AppState; a: AppActions }) {
       <MicMeter st={st} />
       <Appearance />
       <p className="border-t border-line pt-4 text-xs text-fg-3">
-        {LIVE
-          ? "Audio and video use WebRTC and are encrypted in transit. Chat passes through the room server and isn’t stored as history. Calls aren’t recorded."
-          : "Demo mode: remote participants and room activity are simulated."}
+        {"Audio and video use WebRTC and are encrypted in transit. Chat passes through the room server and isn’t stored as history. Calls aren’t recorded."}
       </p>
     </div>
   );

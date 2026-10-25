@@ -25,8 +25,6 @@ export { Toast } from './feedback/Toast';
 export type { ToastProps } from './feedback/Toast';
 export { Banner } from './feedback/Banner';
 export type { BannerProps } from './feedback/Banner';
-export { StatusRow } from './feedback/StatusRow';
-export type { StatusRowProps } from './feedback/StatusRow';
 export { Modal } from './overlays/Modal';
 export type { ModalProps } from './overlays/Modal';
 export { BottomSheet } from './overlays/BottomSheet';

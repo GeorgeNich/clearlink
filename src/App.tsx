@@ -1,13 +1,8 @@
-import { LIVE } from './services/liveRoom';
-import { useEffect, useState } from 'react';
 import { Button } from './components';
-import { DemoDrawer } from './DemoDrawer';
-
 import { useIsPhone } from './hooks/useIsPhone';
 import { CameraBlocked } from './screens/CameraBlocked';
 import { CameraCheck } from './screens/CameraCheck';
 import { Call } from './screens/Call';
-import { Diagnostics } from './screens/Diagnostics';
 import { Ended } from './screens/Ended';
 import { Loading } from './screens/Loading';
 import { Message } from './screens/Message';
@@ -17,14 +12,6 @@ import { useApp } from './state/useApp';
 export function App() {
   const [st, a] = useApp();
   const phone = useIsPhone();
-  const [gallery, setGallery] = useState(() => location.hash === '#components');
-  useEffect(() => {
-    const on = () => setGallery(location.hash === '#components');
-    window.addEventListener('hashchange', on);
-    return () => window.removeEventListener('hashchange', on);
-  }, []);
-  if (gallery) return <Welcome st={st} a={a} phone={phone} />;
-
   let screen;
   switch (st.route) {
     case 'welcome': screen = <Welcome st={st} a={a} phone={phone} />; break;
@@ -32,7 +19,6 @@ export function App() {
     case 'blocked': screen = <CameraBlocked st={st} a={a} />; break;
     case 'validating':
     case 'connecting': screen = <Loading st={st} a={a} />; break;
-    case 'diag': screen = <Diagnostics st={st} a={a} />; break;
     case 'ended': screen = <Ended st={st} a={a} />; break;
     case 'call': screen = <Call st={st} a={a} phone={phone} />; break;
     case 'cannot':
@@ -63,7 +49,6 @@ export function App() {
   return (
     <div className="cl-root relative h-full w-full overflow-hidden">
       {screen}
-      {!LIVE && <DemoDrawer st={st} a={a} />}
     </div>
   );
 }

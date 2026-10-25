@@ -8,8 +8,6 @@ The server does not persist chat or record media. Participants may record, scree
 
 Use one server process behind HTTPS, keep its dependencies updated, and supply only scoped TURN credentials. Do not expose local certificate private keys or administrative secrets. Basic rate limiting is not comprehensive abuse protection.
 
-The connection-check screen is simulated and must not be used as security or reachability evidence.
-
 ## Dependency status
 
 As of October 2026, `npm audit` reports zero advisories. Tailwind 3 depends on an older `postcss-selector-parser`, so `package.json` overrides it to the patched 7.x release; the built output is unchanged.

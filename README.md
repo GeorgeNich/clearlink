@@ -72,7 +72,6 @@ To deploy permanently, run one Node process behind an HTTPS proxy. Keep `/api` o
 - **Five people per room,** because each browser sends its media to every other person.
 - **One server process.** Rooms are held in memory and are lost on restart.
 - **Tested in Chrome.** The automated tests don't cover Safari or iOS.
-- **The connection check at `/test` is simulated.** It shows what a real check will look like, not your actual network.
 
 ## Development
 
@@ -80,8 +79,6 @@ To deploy permanently, run one Node process behind an HTTPS proxy. Keep `/api` o
 npm run server   # Node on port 3001
 npm run dev      # Vite dev server, proxying /api to Node
 ```
-
-Open `/?demo` to step through simulated room states without a second device.
 
 `npm run lan:setup` and `npm run lan` serve the app over HTTPS on your local network with a test certificate, for trying it on a phone at home.
 
@@ -100,7 +97,7 @@ Calls have also been tested by hand between devices on different networks, inclu
 
 ```
 server/            Node room server, signalling, chat, sharing and LAN scripts
-src/services/      WebRTC connections, camera and microphone, demo-mode services
+src/services/      WebRTC connections, camera and microphone, invite sharing
 src/state/         app state and actions
 src/screens/       start screen, camera check, call, chat, settings
 src/components/    buttons, video tiles, control bar, panels

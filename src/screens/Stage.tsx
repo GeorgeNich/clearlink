@@ -57,7 +57,7 @@ export function Stage({ st, a, phone }: { st: AppState; a: AppActions; phone: bo
     <div ref={stageRef} className="relative flex min-h-0 flex-1 select-none flex-col" style={{ gap: 10, opacity: st.conn === 'reconnecting' ? 0.6 : 1, transition: 'opacity var(--cl-duration-slow) var(--cl-ease-gentle)' }}>
       {sharing ? (
         <div className="relative flex min-h-0 flex-1 items-center justify-center rounded-lg border-2 border-accent bg-tile">
-          {st.screenStream ? <RemoteVideo stream={st.screenStream} /> : <span className="text-xs text-fg-3">Simulated shared window.</span>}
+          {st.screenStream ? <RemoteVideo stream={st.screenStream} /> : <span className="text-xs text-fg-3">Starting screen share…</span>}
           <Banner tone="warning" icon="share-screen" title="You’re sharing your screen" action={<Button onClick={a.stopShare}>Stop sharing</Button>}
             className="absolute left-1/2 top-3 -translate-x-1/2" style={{ width: 'min(520px, calc(100% - 24px))' }} />
         </div>

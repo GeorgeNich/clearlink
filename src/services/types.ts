@@ -18,22 +18,12 @@ export interface Room {
 
 export type PreviewResult = { ok: true } | { ok: false; reason: 'blocked' };
 export type ValidateResult = 'ok' | 'missing' | 'full';
-export type CreateResult = { status: 'ok'; room: Room } | { status: 'failed' };
-/** `others` is how many people were already in the room. */
-export type JoinResult = { status: 'ok'; room: Room; others: number } | { status: 'missing' | 'full' | 'failed' };
-
-/** The room backend used by demo mode (MockRoomService). Live calls use LiveRoomService. */
-export interface RoomService {
-  createRoom(): Promise<CreateResult>;
-  validateRoom(code: string): Promise<ValidateResult>;
-  joinRoom(code: string, name: string): Promise<JoinResult>;
-}
 
 export type DeviceKind = 'camera' | 'microphone' | 'speaker';
 export interface DeviceInfo { id: string; label: string }
 export type DeviceOptions = Record<DeviceKind, DeviceInfo[]>;
 
-/** Local camera, microphone and screen share. The mock fakes them; the browser one uses the real devices. */
+/** Local camera, microphone and screen share, implemented by BrowserMediaService. */
 export interface MediaService {
   /** Asks for camera and microphone. Resolves blocked when there is no usable camera. A microphone may still have been granted. */
   preview(): Promise<PreviewResult>;

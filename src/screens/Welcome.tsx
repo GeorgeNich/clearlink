@@ -13,10 +13,7 @@ export function Welcome({ st, a }: Props) {
     <div className="cl-page">
       <header className="cl-header">
         <Wordmark />
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={a.openDiag}>
-            Connection check
-          </Button>
+        <div className="flex min-h-target items-center gap-2">
           <ThemeToggle />
         </div>
       </header>
