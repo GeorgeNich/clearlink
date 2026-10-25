@@ -18,10 +18,35 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 /** Round call control with an always-visible label underneath. */
-export function IconButton({ icon, label, state = 'default', size = 'laptop', showLabel = true, badge, shape = 'round', className = '', type = 'button', ...rest }: IconButtonProps) {
-  const cls = ['cl-ctl', state !== 'default' && 'cl-ctl--' + state, size === 'phone' && 'cl-ctl--phone', shape === 'square' && 'cl-ctl--square', className].filter(Boolean).join(' ');
+export function IconButton({
+  icon,
+  label,
+  state = 'default',
+  size = 'laptop',
+  showLabel = true,
+  badge,
+  shape = 'round',
+  className = '',
+  type = 'button',
+  ...rest
+}: IconButtonProps) {
+  const cls = [
+    'cl-ctl',
+    state !== 'default' && 'cl-ctl--' + state,
+    size === 'phone' && 'cl-ctl--phone',
+    shape === 'square' && 'cl-ctl--square',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
   return (
-    <button type={type} className={cls} title={label} aria-label={showLabel ? undefined : label} {...rest}>
+    <button
+      type={type}
+      className={cls}
+      title={label}
+      aria-label={showLabel ? undefined : label}
+      {...rest}
+    >
       <span className="cl-ctl__disc">
         <Icon name={icon} size={size === 'phone' ? 26 : 24} />
         {badge}

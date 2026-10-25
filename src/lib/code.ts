@@ -13,7 +13,10 @@ export function formatCode(raw: string): string {
 
 /** Uppercases, drops everything that isn't a letter or digit, and caps at 8 characters. */
 export function cleanCode(input: string): string {
-  return input.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  return input
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 8);
 }
 
 /** Returns a plain-language problem with the code, or null when it looks right. */

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode } from 'react';
 export function HallShell({ children }: { children: ReactNode }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center overflow-y-auto bg-bg px-5 py-8">
@@ -25,5 +25,5 @@ export function Card({
     </div>
   );
 }
-export const cardTitle = "m-0 font-display text-2xl font-semibold text-fg";
-export const cardBody = "m-0 text-base text-fg-2 [text-wrap:pretty]";
+export const cardTitle = 'm-0 font-display text-2xl font-semibold text-fg';
+export const cardBody = 'm-0 text-base text-fg-2 [text-wrap:pretty]';

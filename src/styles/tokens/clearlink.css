@@ -2,7 +2,7 @@
    and "system" resolves via prefers-color-scheme. */
 
 :root,
-[data-theme="dark"] {
+[data-theme='dark'] {
   --cl-bg: #0d131c;
   --cl-surface: #131b26;
   --cl-raised: #1a2431;
@@ -35,7 +35,7 @@
   --cl-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   --cl-bg: #f4f6f8;
   --cl-surface: #ffffff;
   --cl-raised: #ffffff;
@@ -76,8 +76,8 @@
   --cl-person-dusk: #8faee0;
   --cl-person-plum: #b79ad6;
 
-  --cl-font-sans: "IBM Plex Sans", system-ui, sans-serif;
-  --cl-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --cl-font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --cl-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --cl-radius-chip: 7px;
   --cl-radius-control: 10px;

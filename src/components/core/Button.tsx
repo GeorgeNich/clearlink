@@ -17,8 +17,27 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /** Text button: primary, secondary, ghost or danger. */
-export function Button({ variant = 'primary', size = 'laptop', block = false, icon, iconOnly = false, children, className = '', type = 'button', style, ...rest }: ButtonProps) {
-  const cls = ['cl-btn', 'cl-btn--' + variant, size === 'phone' && 'cl-btn--phone', block && 'cl-btn--block', className].filter(Boolean).join(' ');
+export function Button({
+  variant = 'primary',
+  size = 'laptop',
+  block = false,
+  icon,
+  iconOnly = false,
+  children,
+  className = '',
+  type = 'button',
+  style,
+  ...rest
+}: ButtonProps) {
+  const cls = [
+    'cl-btn',
+    'cl-btn--' + variant,
+    size === 'phone' && 'cl-btn--phone',
+    block && 'cl-btn--block',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const iconSize = size === 'phone' ? 22 : 20;
   const sq = iconOnly ? { width: size === 'phone' ? 52 : 48, padding: 0 } : null;
   return (

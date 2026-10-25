@@ -25,18 +25,66 @@ export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title
 }
 
 /** Persistent calm notice over the call (weak, reconnecting) or inline in a card. */
-export function Banner({ tone = 'info', title, children, action, loading = false, icon, style, ...rest }: BannerProps) {
+export function Banner({
+  tone = 'info',
+  title,
+  children,
+  action,
+  loading = false,
+  icon,
+  style,
+  ...rest
+}: BannerProps) {
   const t = TONE[tone] || TONE.info;
   const ic = icon === undefined ? t.icon : icon;
   return (
-    <div role={tone === 'danger' ? 'alert' : 'status'} className="cl-motion" {...rest}
-      style={{ display: 'flex', alignItems: 'center', gap: 'var(--cl-space-3)', padding: '12px 16px', borderRadius: 'var(--cl-radius-lg)',
-        background: 'var(--cl-surface)', border: '1px solid ' + t.bd, boxShadow: 'var(--cl-shadow)',
-        animation: 'cl-fade-in var(--cl-duration-slow) var(--cl-ease-gentle) both', ...style }}>
-      {loading ? <Spinner size={28} label={typeof title === 'string' ? title : 'Working'} /> : ic && <span style={{ color: t.fg, display: 'flex', flexShrink: 0 }}><Icon name={ic} size={22} /></span>}
+    <div
+      role={tone === 'danger' ? 'alert' : 'status'}
+      className="cl-motion"
+      {...rest}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--cl-space-3)',
+        padding: '12px 16px',
+        borderRadius: 'var(--cl-radius-lg)',
+        background: 'var(--cl-surface)',
+        border: '1px solid ' + t.bd,
+        boxShadow: 'var(--cl-shadow)',
+        animation: 'cl-fade-in var(--cl-duration-slow) var(--cl-ease-gentle) both',
+        ...style,
+      }}
+    >
+      {loading ? (
+        <Spinner size={28} label={typeof title === 'string' ? title : 'Working'} />
+      ) : (
+        ic && (
+          <span style={{ color: t.fg, display: 'flex', flexShrink: 0 }}>
+            <Icon name={ic} size={22} />
+          </span>
+        )
+      )}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {title && <span style={{ font: 'var(--cl-weight-semibold) var(--cl-size-md)/var(--cl-leading-md) var(--cl-font-sans)', color: 'var(--cl-text)' }}>{title}</span>}
-        {children && <span style={{ font: 'var(--cl-weight-regular) var(--cl-size-sm)/var(--cl-leading-sm) var(--cl-font-sans)', color: 'var(--cl-text-2)' }}>{children}</span>}
+        {title && (
+          <span
+            style={{
+              font: 'var(--cl-weight-semibold) var(--cl-size-md)/var(--cl-leading-md) var(--cl-font-sans)',
+              color: 'var(--cl-text)',
+            }}
+          >
+            {title}
+          </span>
+        )}
+        {children && (
+          <span
+            style={{
+              font: 'var(--cl-weight-regular) var(--cl-size-sm)/var(--cl-leading-sm) var(--cl-font-sans)',
+              color: 'var(--cl-text-2)',
+            }}
+          >
+            {children}
+          </span>
+        )}
       </div>
       {action}
     </div>

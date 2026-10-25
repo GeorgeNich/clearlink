@@ -189,12 +189,12 @@
   background: var(--cl-ok-soft);
   color: var(--cl-ok-text);
 }
-.cl-status[data-state="weak"],
-.cl-status[data-state="reconnecting"] {
+.cl-status[data-state='weak'],
+.cl-status[data-state='reconnecting'] {
   background: var(--cl-warn-soft);
   color: var(--cl-warn-text);
 }
-.cl-status[data-state="failed"] {
+.cl-status[data-state='failed'] {
   background: var(--cl-danger-soft);
   color: var(--cl-danger-text);
 }
@@ -238,7 +238,7 @@
   color: var(--cl-text-2);
   cursor: pointer;
 }
-.cl-appearance button[aria-pressed="true"] {
+.cl-appearance button[aria-pressed='true'] {
   background: var(--cl-raised);
   color: var(--cl-text);
   box-shadow: 0 1px 3px #0002;

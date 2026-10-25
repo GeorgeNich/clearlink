@@ -20,7 +20,10 @@ export type PreviewResult = { ok: true } | { ok: false; reason: 'blocked' };
 export type ValidateResult = 'ok' | 'missing' | 'full';
 
 export type DeviceKind = 'camera' | 'microphone' | 'speaker';
-export interface DeviceInfo { id: string; label: string }
+export interface DeviceInfo {
+  id: string;
+  label: string;
+}
 export type DeviceOptions = Record<DeviceKind, DeviceInfo[]>;
 
 /** Local camera, microphone and screen share, implemented by BrowserMediaService. */

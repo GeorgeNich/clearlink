@@ -1,8 +1,8 @@
-import type { HTMLAttributes } from "react";
-import { IconButton } from "../core/IconButton";
-import { UnreadBadge } from "../chat/UnreadBadge";
+import type { HTMLAttributes } from 'react';
+import { IconButton } from '../core/IconButton';
+import { UnreadBadge } from '../chat/UnreadBadge';
 export interface ControlBarProps extends HTMLAttributes<HTMLDivElement> {
-  size?: "phone" | "laptop";
+  size?: 'phone' | 'laptop';
   micOn?: boolean;
   cameraOn?: boolean;
   chatOpen?: boolean;
@@ -22,7 +22,7 @@ export interface ControlBarProps extends HTMLAttributes<HTMLDivElement> {
   onMore?: () => void;
 }
 export function ControlBar({
-  size = "laptop",
+  size = 'laptop',
   micOn = true,
   cameraOn = true,
   chatOpen = false,
@@ -42,29 +42,24 @@ export function ControlBar({
   onMore,
   ...rest
 }: ControlBarProps) {
-  const phone = size === "phone";
+  const phone = size === 'phone';
   return (
-    <div
-      role="toolbar"
-      aria-label="Call controls"
-      className="cl-toolbar"
-      {...rest}
-    >
+    <div role="toolbar" aria-label="Call controls" className="cl-toolbar" {...rest}>
       <IconButton
         size={size}
         showLabel={showLabels}
-        icon={micOn ? "mic" : "mic-off"}
-        label={micOn ? "Mute microphone" : "Unmute microphone"}
-        state={micOn ? "default" : "off"}
+        icon={micOn ? 'mic' : 'mic-off'}
+        label={micOn ? 'Mute microphone' : 'Unmute microphone'}
+        state={micOn ? 'default' : 'off'}
         aria-pressed={!micOn}
         onClick={onMic}
       />
       <IconButton
         size={size}
         showLabel={showLabels}
-        icon={cameraOn ? "camera" : "camera-off"}
-        label={cameraOn ? "Turn camera off" : "Turn camera on"}
-        state={cameraOn ? "default" : "off"}
+        icon={cameraOn ? 'camera' : 'camera-off'}
+        label={cameraOn ? 'Turn camera off' : 'Turn camera on'}
+        state={cameraOn ? 'default' : 'off'}
         aria-pressed={!cameraOn}
         onClick={onCamera}
       />
@@ -72,8 +67,8 @@ export function ControlBar({
         <IconButton
           showLabel={showLabels}
           icon="share-screen"
-          label={sharing ? "Stop sharing" : "Share screen"}
-          state={sharing ? "active" : "default"}
+          label={sharing ? 'Stop sharing' : 'Share screen'}
+          state={sharing ? 'active' : 'default'}
           aria-pressed={sharing}
           onClick={onShare}
         />
@@ -84,15 +79,12 @@ export function ControlBar({
         showLabel={showLabels}
         icon="chat"
         label="Chat"
-        state={chatOpen ? "active" : "default"}
+        state={chatOpen ? 'active' : 'default'}
         aria-expanded={chatOpen}
         onClick={onChat}
         badge={
           unread > 0 && !chatOpen ? (
-            <UnreadBadge
-              count={unread}
-              style={{ position: "absolute", top: -6, right: -6 }}
-            />
+            <UnreadBadge count={unread} style={{ position: 'absolute', top: -6, right: -6 }} />
           ) : null
         }
       />
@@ -101,7 +93,7 @@ export function ControlBar({
         showLabel={showLabels}
         icon="invite"
         label="Invite"
-        state={inviteOpen ? "active" : "default"}
+        state={inviteOpen ? 'active' : 'default'}
         aria-expanded={inviteOpen}
         onClick={onInvite}
       />
@@ -121,7 +113,7 @@ export function ControlBar({
             showLabel={showLabels}
             icon="settings"
             label="Settings"
-            state={settingsOpen ? "active" : "default"}
+            state={settingsOpen ? 'active' : 'default'}
             aria-expanded={settingsOpen}
             onClick={onSettings}
           />

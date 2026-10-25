@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Button, Icon, TextInput, VideoTile, Wordmark } from "../components";
-import type { AppActions, AppState } from "../state/useApp";
-import { ThemeToggle } from "../state/theme";
+import { useState } from 'react';
+import { Button, Icon, TextInput, VideoTile, Wordmark } from '../components';
+import type { AppActions, AppState } from '../state/useApp';
+import { ThemeToggle } from '../state/theme';
 interface Props {
   st: AppState;
   a: AppActions;
@@ -28,7 +28,7 @@ export function Welcome({ st, a }: Props) {
           >
             <Button
               variant="ghost"
-              style={{ alignSelf: "flex-start" }}
+              style={{ alignSelf: 'flex-start' }}
               onClick={() => setJoining(false)}
             >
               ← Back
@@ -36,8 +36,7 @@ export function Welcome({ st, a }: Props) {
             <div>
               <h1 className="cl-title">Join a room</h1>
               <p className="mt-3 text-fg-2">
-                Enter the 8-character code from your invitation. Invite links
-                skip this step.
+                Enter the 8-character code from your invitation. Invite links skip this step.
               </p>
             </div>
             <TextInput
@@ -63,27 +62,18 @@ export function Welcome({ st, a }: Props) {
             <div>
               <h1>Video calls that start with a link.</h1>
               <p className="cl-lead">
-                Create a room, send the link, and talk in your browser. Up to
-                five people per room.
+                Create a room, send the link, and talk in your browser. Up to five people per room.
               </p>
               <div className="cl-hero-actions flex gap-3">
                 <Button size="phone" icon="camera" onClick={a.startCall}>
                   Create room
                 </Button>
-                <Button
-                  size="phone"
-                  variant="secondary"
-                  onClick={() => setJoining(true)}
-                >
+                <Button size="phone" variant="secondary" onClick={() => setJoining(true)}>
                   Join room
                 </Button>
               </div>
               <div className="cl-facts">
-                {[
-                  "No account needed",
-                  "Nothing to install",
-                  "Self-hostable",
-                ].map((t) => (
+                {['No account needed', 'Nothing to install', 'Self-hostable'].map((t) => (
                   <span key={t}>
                     <Icon name="check" size={17} />
                     {t}
@@ -93,13 +83,11 @@ export function Welcome({ st, a }: Props) {
             </div>
             <div className="cl-preview" aria-hidden="true">
               <div className="cl-preview-grid">
-                {(
-                  ["Priya Raman", "Alex Chen", "Sam Taylor", "You"] as const
-                ).map((name, i) => (
+                {(['Priya Raman', 'Alex Chen', 'Sam Taylor', 'You'] as const).map((name, i) => (
                   <VideoTile
                     key={name}
                     name={name}
-                    color={(["rose", "sage", "dusk", "amber"] as const)[i]}
+                    color={(['rose', 'sage', 'dusk', 'amber'] as const)[i]}
                     cameraOff={i !== 0}
                     micOff={i === 2}
                     size="phone"
@@ -107,19 +95,17 @@ export function Welcome({ st, a }: Props) {
                 ))}
               </div>
               <div className="flex justify-center gap-2 pt-3">
-                {(["mic", "camera", "share-screen", "leave"] as const).map(
-                  (icon) => (
-                    <span
-                      key={icon}
-                      className={
-                        "flex h-10 w-10 items-center justify-center rounded-md " +
-                        (icon === "leave" ? "bg-danger text-white" : "bg-raised")
-                      }
-                    >
-                      <Icon name={icon} size={19} />
-                    </span>
-                  ),
-                )}
+                {(['mic', 'camera', 'share-screen', 'leave'] as const).map((icon) => (
+                  <span
+                    key={icon}
+                    className={
+                      'flex h-10 w-10 items-center justify-center rounded-md ' +
+                      (icon === 'leave' ? 'bg-danger text-white' : 'bg-raised')
+                    }
+                  >
+                    <Icon name={icon} size={19} />
+                  </span>
+                ))}
               </div>
             </div>
           </div>

@@ -21,11 +21,31 @@ export function Toast({ tone = 'neutral', icon, children, style, ...rest }: Toas
   const t = TONE[tone] || TONE.neutral;
   const ic = icon === undefined ? t.icon : icon;
   return (
-    <div role="status" className="cl-motion" {...rest}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--cl-space-2)', minHeight: 44, padding: '10px 16px', borderRadius: 'var(--cl-radius-lg)',
-        background: 'var(--cl-surface)', border: '1px solid ' + t.bd, boxShadow: 'var(--cl-shadow)', color: 'var(--cl-text)',
-        font: 'var(--cl-weight-medium) var(--cl-size-sm)/var(--cl-leading-sm) var(--cl-font-sans)', animation: 'cl-rise-in var(--cl-duration-base) var(--cl-ease-out) both', ...style }}>
-      {ic && <span style={{ color: t.fg, display: 'flex' }}><Icon name={ic} size={18} /></span>}
+    <div
+      role="status"
+      className="cl-motion"
+      {...rest}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 'var(--cl-space-2)',
+        minHeight: 44,
+        padding: '10px 16px',
+        borderRadius: 'var(--cl-radius-lg)',
+        background: 'var(--cl-surface)',
+        border: '1px solid ' + t.bd,
+        boxShadow: 'var(--cl-shadow)',
+        color: 'var(--cl-text)',
+        font: 'var(--cl-weight-medium) var(--cl-size-sm)/var(--cl-leading-sm) var(--cl-font-sans)',
+        animation: 'cl-rise-in var(--cl-duration-base) var(--cl-ease-out) both',
+        ...style,
+      }}
+    >
+      {ic && (
+        <span style={{ color: t.fg, display: 'flex' }}>
+          <Icon name={ic} size={18} />
+        </span>
+      )}
       <span>{children}</span>
     </div>
   );

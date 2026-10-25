@@ -24,30 +24,50 @@ export class BrowserMediaService implements MediaService {
     this.current = tracks.length ? new MediaStream(tracks) : null;
   }
   private live(kind: 'video' | 'audio') {
-    return this.tracks.filter(t => t.kind === kind && t.readyState === 'live');
+    return this.tracks.filter((t) => t.kind === kind && t.readyState === 'live');
   }
   private async loadDevices() {
     const list = await navigator.mediaDevices.enumerateDevices().catch(() => []);
-    const pick = (k: MediaDeviceKind, fallback: string): DeviceInfo[] => list.filter(d => d.kind === k).map((d, i) => ({ id: d.deviceId, label: d.label || `${fallback} ${i + 1}` }));
-    this.options = { camera: pick('videoinput', 'Camera'), microphone: pick('audioinput', 'Microphone'), speaker: pick('audiooutput', 'Speaker') };
-    this.chosen.camera = this.live('video')[0]?.getSettings().deviceId || this.chosen.camera || this.options.camera[0]?.id || '';
-    this.chosen.microphone = this.live('audio')[0]?.getSettings().deviceId || this.chosen.microphone || this.options.microphone[0]?.id || '';
+    const pick = (k: MediaDeviceKind, fallback: string): DeviceInfo[] =>
+      list
+        .filter((d) => d.kind === k)
+        .map((d, i) => ({ id: d.deviceId, label: d.label || `${fallback} ${i + 1}` }));
+    this.options = {
+      camera: pick('videoinput', 'Camera'),
+      microphone: pick('audioinput', 'Microphone'),
+      speaker: pick('audiooutput', 'Speaker'),
+    };
+    this.chosen.camera =
+      this.live('video')[0]?.getSettings().deviceId ||
+      this.chosen.camera ||
+      this.options.camera[0]?.id ||
+      '';
+    this.chosen.microphone =
+      this.live('audio')[0]?.getSettings().deviceId ||
+      this.chosen.microphone ||
+      this.options.microphone[0]?.id ||
+      '';
   }
   private async acquire(kind: 'video' | 'audio'): Promise<boolean> {
-    const generation = this.generation, request = ++this.requests[kind];
+    const generation = this.generation,
+      request = ++this.requests[kind];
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ [kind]: this.constraint(kind) });
       if (generation !== this.generation || request !== this.requests[kind]) {
-        stream.getTracks().forEach(t => t.stop());
+        stream.getTracks().forEach((t) => t.stop());
         return false;
       }
       // Keep a working device until its replacement has actually opened.
-      this.live(kind).forEach(t => t.stop());
-      stream.getAudioTracks().forEach(t => { t.enabled = this.micOn; });
-      this.setTracks([...this.tracks.filter(t => t.kind !== kind), ...stream.getTracks()]);
+      this.live(kind).forEach((t) => t.stop());
+      stream.getAudioTracks().forEach((t) => {
+        t.enabled = this.micOn;
+      });
+      this.setTracks([...this.tracks.filter((t) => t.kind !== kind), ...stream.getTracks()]);
       await this.loadDevices();
       return generation === this.generation && request === this.requests[kind];
-    } catch { return false; }
+    } catch {
+      return false;
+    }
   }
   async preview(): Promise<PreviewResult> {
     this.release();
@@ -59,48 +79,76 @@ export class BrowserMediaService implements MediaService {
   }
   release() {
     this.generation++;
-    this.tracks.forEach(t => t.stop());
+    this.tracks.forEach((t) => t.stop());
     this.setTracks([]);
     this.stopScreenShare();
   }
-  stream() { return this.current; }
-  hasCamera() { return this.live('video').length > 0; }
-  hasMic() { return this.live('audio').length > 0; }
-  setMic(on: boolean) { this.micOn = on; this.live('audio').forEach(t => { t.enabled = on; }); }
+  stream() {
+    return this.current;
+  }
+  hasCamera() {
+    return this.live('video').length > 0;
+  }
+  hasMic() {
+    return this.live('audio').length > 0;
+  }
+  setMic(on: boolean) {
+    this.micOn = on;
+    this.live('audio').forEach((t) => {
+      t.enabled = on;
+    });
+  }
   async setCamera(on: boolean): Promise<boolean> {
     this.cameraWanted = on;
     if (!on) {
       this.requests.video++;
-      this.live('video').forEach(t => t.stop());
-      this.setTracks(this.tracks.filter(t => t.kind !== 'video'));
+      this.live('video').forEach((t) => t.stop());
+      this.setTracks(this.tracks.filter((t) => t.kind !== 'video'));
       return true;
     }
     return this.hasCamera() || this.acquire('video');
   }
-  devices() { return this.options; }
-  selected() { return { ...this.chosen }; }
+  devices() {
+    return this.options;
+  }
+  selected() {
+    return { ...this.chosen };
+  }
   async selectDevice(kind: DeviceKind, id: string) {
     const previous = this.chosen[kind];
     this.chosen[kind] = id;
     if (kind === 'speaker' || (kind === 'camera' && !this.cameraWanted)) return;
-    if (!await this.acquire(kind === 'camera' ? 'video' : 'audio')) {
+    if (!(await this.acquire(kind === 'camera' ? 'video' : 'audio'))) {
       this.chosen[kind] = previous;
-      throw new Error('That device could not be opened. Your previous device is kept where available.');
+      throw new Error(
+        'That device could not be opened. Your previous device is kept where available.',
+      );
     }
   }
-  screenStream() { return this.display; }
+  screenStream() {
+    return this.display;
+  }
   async startScreenShare() {
     const generation = ++this.shareGeneration;
     const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-    if (generation !== this.shareGeneration) { stream.getTracks().forEach(t => t.stop()); return; }
-    this.display?.getTracks().forEach(t => t.stop());
+    if (generation !== this.shareGeneration) {
+      stream.getTracks().forEach((t) => t.stop());
+      return;
+    }
+    this.display?.getTracks().forEach((t) => t.stop());
     this.display = stream;
     this.sharing = true;
-    stream.getVideoTracks()[0].onended = () => { this.stopScreenShare(); this.onShareEnded?.(); };
+    stream.getVideoTracks()[0].onended = () => {
+      this.stopScreenShare();
+      this.onShareEnded?.();
+    };
   }
   stopScreenShare() {
     this.shareGeneration++;
-    this.display?.getTracks().forEach(t => { t.onended = null; t.stop(); });
+    this.display?.getTracks().forEach((t) => {
+      t.onended = null;
+      t.stop();
+    });
     this.display = null;
     this.sharing = false;
   }

@@ -1,12 +1,12 @@
-import { Appearance } from "../state/theme";
-import { useEffect, useState } from "react";
-import type { DeviceKind } from "../services/types";
-import type { AppActions, AppState } from "../state/useApp";
+import { Appearance } from '../state/theme';
+import { useEffect, useState } from 'react';
+import type { DeviceKind } from '../services/types';
+import type { AppActions, AppState } from '../state/useApp';
 
 const FIELDS: [DeviceKind, string][] = [
-  ["camera", "Camera"],
-  ["microphone", "Microphone"],
-  ["speaker", "Speaker"],
+  ['camera', 'Camera'],
+  ['microphone', 'Microphone'],
+  ['speaker', 'Speaker'],
 ];
 
 /** Level 0–100, measured from your microphone. */
@@ -17,8 +17,7 @@ function useMicLevel(stream: MediaStream | null, enabled: boolean) {
       setLevel(0);
       return;
     }
-    const audio =
-      stream?.getAudioTracks().filter((t) => t.readyState === "live") ?? [];
+    const audio = stream?.getAudioTracks().filter((t) => t.readyState === 'live') ?? [];
     if (!audio.length) {
       setLevel(0);
       return;
@@ -50,7 +49,7 @@ function useMicLevel(stream: MediaStream | null, enabled: boolean) {
 }
 
 export function DeviceFields({ st, a }: { st: AppState; a: AppActions }) {
-  const unsupported = !("setSinkId" in HTMLMediaElement.prototype);
+  const unsupported = !('setSinkId' in HTMLMediaElement.prototype);
   return (
     <fieldset className="flex min-w-0 flex-col gap-3">
       <legend className="mb-3 text-sm font-semibold">Devices</legend>
@@ -58,17 +57,17 @@ export function DeviceFields({ st, a }: { st: AppState; a: AppActions }) {
         const options = st.deviceOptions[kind];
         return (
           <div key={kind} className="flex flex-col gap-1">
-            <label htmlFor={"dev-" + kind} className="text-xs text-fg-2">
+            <label htmlFor={'dev-' + kind} className="text-xs text-fg-2">
               {label}
             </label>
             <select
-              id={"dev-" + kind}
+              id={'dev-' + kind}
               className="cl-input"
               value={st.devices[kind]}
-              disabled={!options.length || (kind === "speaker" && unsupported)}
+              disabled={!options.length || (kind === 'speaker' && unsupported)}
               onChange={(e) => void a.selectDevice(kind, e.target.value)}
             >
-              {kind === "speaker" && unsupported ? (
+              {kind === 'speaker' && unsupported ? (
                 <option value={st.devices.speaker}>System default</option>
               ) : options.length ? (
                 options.map((o) => (
@@ -85,8 +84,7 @@ export function DeviceFields({ st, a }: { st: AppState; a: AppActions }) {
       })}
       {unsupported && (
         <p className="text-xs text-fg-3">
-          Sound uses your system output. This browser doesn’t support choosing a
-          speaker.
+          Sound uses your system output. This browser doesn’t support choosing a speaker.
         </p>
       )}
     </fieldset>
@@ -98,9 +96,7 @@ export function MicMeter({ st }: { st: AppState }) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xs text-fg-2">
-        {st.micOn
-          ? "Microphone level"
-          : "You’re muted, so others can’t hear you."}
+        {st.micOn ? 'Microphone level' : 'You’re muted, so others can’t hear you.'}
       </span>
       <div
         role="meter"
@@ -110,10 +106,7 @@ export function MicMeter({ st }: { st: AppState }) {
         aria-valuenow={shown}
         className="h-2 overflow-hidden rounded-full bg-sunken"
       >
-        <div
-          className="h-full rounded-full bg-accent"
-          style={{ width: shown + "%" }}
-        />
+        <div className="h-full rounded-full bg-accent" style={{ width: shown + '%' }} />
       </div>
     </div>
   );
@@ -125,7 +118,9 @@ export function SettingsPanelBody({ st, a }: { st: AppState; a: AppActions }) {
       <MicMeter st={st} />
       <Appearance />
       <p className="border-t border-line pt-4 text-xs text-fg-3">
-        {"Audio and video use WebRTC and are encrypted in transit. Chat passes through the room server and isn’t stored as history. Calls aren’t recorded."}
+        {
+          'Audio and video use WebRTC and are encrypted in transit. Chat passes through the room server and isn’t stored as history. Calls aren’t recorded.'
+        }
       </p>
     </div>
   );

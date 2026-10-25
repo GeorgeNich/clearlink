@@ -1,20 +1,20 @@
-import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
-import { Icon } from "../icons/Icon";
-import { Avatar } from "./Avatar";
-import type { PersonColor } from "./Avatar";
-import { Spinner } from "../feedback/Spinner";
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import { Icon } from '../icons/Icon';
+import { Avatar } from './Avatar';
+import type { PersonColor } from './Avatar';
+import { Spinner } from '../feedback/Spinner';
 
 const chip: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
+  display: 'inline-flex',
+  alignItems: 'center',
   gap: 6,
   height: 28,
-  padding: "0 10px",
-  borderRadius: "var(--cl-radius-sm)",
-  background: "var(--cl-surface-label)",
-  color: "#E9EEF4",
-  font: "var(--cl-weight-medium) var(--cl-size-xs)/1 var(--cl-font-sans)",
-  whiteSpace: "nowrap",
+  padding: '0 10px',
+  borderRadius: 'var(--cl-radius-sm)',
+  background: 'var(--cl-surface-label)',
+  color: '#E9EEF4',
+  font: 'var(--cl-weight-medium) var(--cl-size-xs)/1 var(--cl-font-sans)',
+  whiteSpace: 'nowrap',
 };
 
 export interface VideoTileProps extends HTMLAttributes<HTMLElement> {
@@ -27,8 +27,8 @@ export interface VideoTileProps extends HTMLAttributes<HTMLElement> {
   /** Accent ring + "Speaking" chip, 600ms fade. */
   speaking?: boolean;
   /** live (default) · connecting (spinner, no video) · weak (badge, video kept). */
-  status?: "live" | "connecting" | "weak";
-  size?: "phone" | "laptop";
+  status?: 'live' | 'connecting' | 'weak';
+  size?: 'phone' | 'laptop';
   /** The <video> element. Should be object-fit: cover, absolutely filling the tile. */
   children?: ReactNode;
   /** Makes the tile a button (e.g. enlarge to spotlight). */
@@ -38,57 +38,55 @@ export interface VideoTileProps extends HTMLAttributes<HTMLElement> {
 /** One participant's video. States compose: speaking, mic off, camera off, connecting, weak. */
 export function VideoTile({
   name,
-  color = "amber",
+  color = 'amber',
   cameraOff = false,
   micOff = false,
   speaking = false,
-  status = "live",
-  size = "laptop",
+  status = 'live',
+  size = 'laptop',
   children,
   onSelect,
   style,
   ...rest
 }: VideoTileProps) {
-  const phone = size === "phone";
-  const connecting = status === "connecting";
+  const phone = size === 'phone';
+  const connecting = status === 'connecting';
   const showVideo = !cameraOff && !connecting;
   const desc = [
     name,
-    speaking && "speaking",
-    micOff && "mic off",
-    cameraOff && "camera off",
-    connecting && "connecting",
-    status === "weak" && "weak connection",
+    speaking && 'speaking',
+    micOff && 'mic off',
+    cameraOff && 'camera off',
+    connecting && 'connecting',
+    status === 'weak' && 'weak connection',
   ]
     .filter(Boolean)
-    .join(", ");
-  const Tag = onSelect ? "button" : "div";
+    .join(', ');
+  const Tag = onSelect ? 'button' : 'div';
   return (
     <Tag
-      type={onSelect ? "button" : undefined}
+      type={onSelect ? 'button' : undefined}
       onClick={onSelect}
       aria-label={desc}
       {...(rest as HTMLAttributes<HTMLElement>)}
       style={{
-        position: "relative",
-        overflow: "hidden",
+        position: 'relative',
+        overflow: 'hidden',
         minWidth: 0,
         minHeight: 0,
-        width: "100%",
-        height: "100%",
+        width: '100%',
+        height: '100%',
         padding: 0,
         border: 0,
-        font: "inherit",
-        color: "inherit",
-        textAlign: "left",
-        borderRadius: "var(--cl-radius-lg)",
-        background: "var(--cl-tile)",
-        cursor: onSelect ? "pointer" : "default",
-        boxShadow: speaking
-          ? "var(--cl-glow-accent)"
-          : "0 0 0 1px var(--cl-line)",
-        transition: "box-shadow var(--cl-duration-glow) var(--cl-ease-gentle)",
-        display: "block",
+        font: 'inherit',
+        color: 'inherit',
+        textAlign: 'left',
+        borderRadius: 'var(--cl-radius-lg)',
+        background: 'var(--cl-tile)',
+        cursor: onSelect ? 'pointer' : 'default',
+        boxShadow: speaking ? 'var(--cl-glow-accent)' : '0 0 0 1px var(--cl-line)',
+        transition: 'box-shadow var(--cl-duration-glow) var(--cl-ease-gentle)',
+        display: 'block',
         ...style,
       }}
     >
@@ -97,7 +95,7 @@ export function VideoTile({
           <div
             aria-hidden="true"
             style={{
-              position: "absolute",
+              position: 'absolute',
               inset: 0,
               background: `radial-gradient(110% 90% at 50% 30%, color-mix(in srgb, var(--cl-person-${color}) 32%, transparent), var(--cl-tile) 75%)`,
             }}
@@ -106,23 +104,23 @@ export function VideoTile({
       {!showVideo && (
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "var(--cl-space-3)",
-            background: "var(--cl-backdrop-glow)",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 'var(--cl-space-3)',
+            background: 'var(--cl-backdrop-glow)',
           }}
         >
           {connecting ? (
             <>
-              <Spinner size={phone ? 40 : 52} label={"Connecting " + name} />
+              <Spinner size={phone ? 40 : 52} label={'Connecting ' + name} />
               <span
                 style={{
-                  font: "var(--cl-weight-medium) var(--cl-size-sm)/1 var(--cl-font-sans)",
-                  color: "var(--cl-text-2)",
+                  font: 'var(--cl-weight-medium) var(--cl-size-sm)/1 var(--cl-font-sans)',
+                  color: 'var(--cl-text-2)',
                 }}
               >
                 Connecting…
@@ -130,18 +128,14 @@ export function VideoTile({
             </>
           ) : (
             <>
-              <Avatar
-                name={name}
-                color={color}
-                size={phone ? 52 : 84}
-              />
+              <Avatar name={name} color={color} size={phone ? 52 : 84} />
               {!phone && (
                 <span
                   style={{
-                    display: "flex",
-                    alignItems: "center",
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: 6,
-                    color: "var(--cl-tile-text)",
+                    color: 'var(--cl-tile-text)',
                     fontSize: 13,
                   }}
                 >
@@ -153,14 +147,14 @@ export function VideoTile({
           )}
         </div>
       )}
-      {status === "weak" && (
+      {status === 'weak' && (
         <span
           style={{
             ...chip,
-            position: "absolute",
+            position: 'absolute',
             top: 10,
             left: 10,
-            color: "var(--cl-accent)",
+            color: 'var(--cl-accent)',
           }}
         >
           <Icon name="signal-weak" size={18} /> Weak connection
@@ -168,12 +162,12 @@ export function VideoTile({
       )}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           left: 10,
           right: 10,
           bottom: 10,
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           gap: 6,
         }}
       >
@@ -181,8 +175,8 @@ export function VideoTile({
           style={{
             ...chip,
             minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
           {name}
@@ -191,8 +185,8 @@ export function VideoTile({
           <span
             style={{
               ...chip,
-              background: "var(--cl-accent)",
-              color: "var(--cl-accent-ink)",
+              background: 'var(--cl-accent)',
+              color: 'var(--cl-accent-ink)',
               fontWeight: 600,
             }}
           >
@@ -205,13 +199,13 @@ export function VideoTile({
             title="Mic off"
             style={{
               ...chip,
-              background: "var(--cl-danger)",
-              color: "var(--cl-accent-ink)",
-              padding: phone ? "0 6px" : "0 10px 0 8px",
+              background: 'var(--cl-danger)',
+              color: 'var(--cl-accent-ink)',
+              padding: phone ? '0 6px' : '0 10px 0 8px',
             }}
           >
             <Icon name="mic-off" size={16} />
-            {!phone && "Mic off"}
+            {!phone && 'Mic off'}
           </span>
         )}
       </div>

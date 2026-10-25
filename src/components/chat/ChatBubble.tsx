@@ -14,19 +14,64 @@ export interface ChatBubbleProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** One chat message. Self = right, accent tint, "You". Other = left, avatar + name in their colour. */
-export function ChatBubble({ self = false, name = '', color = 'amber', time, children, style, ...rest }: ChatBubbleProps) {
+export function ChatBubble({
+  self = false,
+  name = '',
+  color = 'amber',
+  time,
+  children,
+  style,
+  ...rest
+}: ChatBubbleProps) {
   return (
-    <div {...rest} style={{ display: 'flex', gap: 'var(--cl-space-3)', alignItems: 'flex-end', flexDirection: self ? 'row-reverse' : 'row', ...style }}>
+    <div
+      {...rest}
+      style={{
+        display: 'flex',
+        gap: 'var(--cl-space-3)',
+        alignItems: 'flex-end',
+        flexDirection: self ? 'row-reverse' : 'row',
+        ...style,
+      }}
+    >
       {!self && <Avatar name={name} color={color} size={36} />}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxWidth: '80%', alignItems: self ? 'flex-end' : 'flex-start' }}>
-        <span style={{ font: 'var(--cl-weight-medium) var(--cl-size-xs)/var(--cl-leading-xs) var(--cl-font-sans)', color: 'var(--cl-text-2)' }}>
-          <span style={{ color: self ? 'var(--cl-text-2)' : 'var(--cl-person-' + color + ')', fontWeight: 600 }}>{self ? 'You' : name}</span>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+          maxWidth: '80%',
+          alignItems: self ? 'flex-end' : 'flex-start',
+        }}
+      >
+        <span
+          style={{
+            font: 'var(--cl-weight-medium) var(--cl-size-xs)/var(--cl-leading-xs) var(--cl-font-sans)',
+            color: 'var(--cl-text-2)',
+          }}
+        >
+          <span
+            style={{
+              color: self ? 'var(--cl-text-2)' : 'var(--cl-person-' + color + ')',
+              fontWeight: 600,
+            }}
+          >
+            {self ? 'You' : name}
+          </span>
           {time && <span> · {time}</span>}
         </span>
-        <div style={{ padding: '10px 14px', borderRadius: self ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-          background: self ? 'var(--cl-accent-soft)' : 'var(--cl-raised)',
-          border: '1px solid ' + (self ? 'var(--cl-line)' : 'var(--cl-line)'),
-          color: 'var(--cl-text)', font: 'var(--cl-weight-regular) var(--cl-text-chat)/var(--cl-leading-md) var(--cl-font-sans)', overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>
+        <div
+          style={{
+            padding: '10px 14px',
+            borderRadius: self ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+            background: self ? 'var(--cl-accent-soft)' : 'var(--cl-raised)',
+            border: '1px solid ' + (self ? 'var(--cl-line)' : 'var(--cl-line)'),
+            color: 'var(--cl-text)',
+            font: 'var(--cl-weight-regular) var(--cl-text-chat)/var(--cl-leading-md) var(--cl-font-sans)',
+            overflowWrap: 'anywhere',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
           {children}
         </div>
       </div>

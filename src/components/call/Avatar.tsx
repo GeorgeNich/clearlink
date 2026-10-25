@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from 'react';
 
-
 export type PersonColor = 'amber' | 'rose' | 'sage' | 'dusk' | 'plum';
 export const PERSON_COLORS: PersonColor[] = ['amber', 'rose', 'sage', 'dusk', 'plum'];
 
@@ -23,9 +22,26 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
 export function Avatar({ name, color = 'amber', size = 64, style, ...rest }: AvatarProps) {
   const c = 'var(--cl-person-' + color + ')';
   const disc = (
-    <span aria-hidden="true" style={{ width: size, height: size, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      border: 'none', color: '#0D131C', background: c,
-      fontFamily: 'var(--cl-font-sans)', fontWeight: 500, fontSize: Math.round(size * 0.38), lineHeight: 1, letterSpacing: '0.02em' }}>
+    <span
+      aria-hidden="true"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: 'none',
+        color: '#0D131C',
+        background: c,
+        fontFamily: 'var(--cl-font-sans)',
+        fontWeight: 500,
+        fontSize: Math.round(size * 0.38),
+        lineHeight: 1,
+        letterSpacing: '0.02em',
+      }}
+    >
       {initialsOf(name)}
     </span>
   );
