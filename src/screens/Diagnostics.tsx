@@ -11,7 +11,7 @@ export function Diagnostics({ st, a }: { st: AppState; a: AppActions }) {
         <Wordmark />
         <div className="flex flex-col gap-[10px]">
           <h1 className="m-0 font-display text-[36px] font-semibold leading-[1.05] tracking-display text-fg">Connection check</h1>
-          <Banner icon="alert" title="Simulated results">This prototype doesn’t run a real network test. These results are made up to show what the check will look like. A passing relay result here does not mean TURN is configured.</Banner>
+          <Banner icon="alert" title="Simulated results">This check doesn’t test your network yet. These results are simulated to show what it will look like. A passing relay result here does not mean TURN is configured.</Banner>
         </div>
         <div className="overflow-hidden rounded-lg border border-line">
           {DIAG_KEYS.map(k => {

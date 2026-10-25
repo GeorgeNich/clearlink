@@ -1,5 +1,4 @@
-/* Interactive state styles for the React components. Each class maps 1:1 to a
-   component variant so it can be ported to Tailwind @apply or cva(). */
+/* Interactive state styles for the React components, one class per component variant. */
 
 /* ── Button ── */
 .cl-btn {

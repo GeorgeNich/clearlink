@@ -3,6 +3,7 @@ dist/
 *.tsbuildinfo
 .local-tls/
 .DS_Store
+.claude/
 
 # Local configuration and credentials
 .env

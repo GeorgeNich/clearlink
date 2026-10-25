@@ -70,7 +70,7 @@ export function DemoDrawer({ st, a }: { st: AppState; a: AppActions }) {
           )}
         </div>
       )}
-      {/* Small on purpose: a reviewer tab that stays clear of the call controls. */}
+      {/* Small on purpose: the demo tab stays clear of the call controls. */}
       <button type="button" aria-expanded={open} onClick={() => setOpen(o => !o)}
         className="h-5 rounded-t-md border border-b-0 border-line bg-panel px-3 text-xs leading-none text-fg-2 hover:text-fg">
         {open ? 'Hide demo' : 'Demo · simulated'}

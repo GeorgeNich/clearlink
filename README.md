@@ -1,6 +1,6 @@
 # clearlink
 
-![Clearlink: Video calls that start with a link. Five-person desktop room with staged participants and cameras off.](docs/repository-presentation/media/clearlink-hero.png)
+![Clearlink: Video calls that start with a link. Five-person desktop room with staged participants and cameras off.](docs/media/clearlink-hero.png)
 
 Create a room, send the link, and talk in your browser. Clearlink runs on your own computer, holds calls for up to five people, and sends audio and video directly between participants rather than through a server.
 
@@ -49,11 +49,11 @@ The server binds to `127.0.0.1` by default. Localhost supports camera and microp
 
 ## A look inside
 
-![Clearlink desktop and phone call layouts with five staged participants and cameras off.](docs/repository-presentation/media/clearlink-desktop-mobile.png)
+![Clearlink desktop and phone call layouts with five staged participants and cameras off.](docs/media/clearlink-desktop-mobile.png)
 
 *The same room on desktop and at a phone-sized viewport. Fictional participants; cameras and microphones off.*
 
-![Clearlink chat panel showing two staged messages beside the call.](docs/repository-presentation/media/clearlink-chat.png)
+![Clearlink chat panel showing two staged messages beside the call.](docs/media/clearlink-chat.png)
 
 *Staged conversation in the running app. Chat is forwarded by the Node room server to people currently present.*
 
@@ -61,7 +61,7 @@ The server binds to `127.0.0.1` by default. Localhost supports camera and microp
 
 Clearlink has two traffic paths: browsers exchange call media directly, while the Node server coordinates the room and delivers chat. The diagram shows two participants; each browser establishes a separate media connection to each other participant.
 
-![Browsers exchange call media directly. Cloudflare Tunnel connects them to the Node room server on the host computer; Cloudflare STUN separately helps discover connection addresses.](docs/repository-presentation/media/architecture.svg)
+![Browsers exchange call media directly. Cloudflare Tunnel connects them to the Node room server on the host computer; Cloudflare STUN separately helps discover connection addresses.](docs/media/architecture.svg)
 
 *Shown: the local hosting setup with Cloudflare Tunnel. Other deployments can use their own HTTPS proxy.*
 

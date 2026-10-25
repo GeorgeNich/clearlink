@@ -22,7 +22,7 @@ export type CreateResult = { status: 'ok'; room: Room } | { status: 'failed' };
 /** `others` is how many people were already in the room. */
 export type JoinResult = { status: 'ok'; room: Room; others: number } | { status: 'missing' | 'full' | 'failed' };
 
-/** Everything the interface needs from a room backend. The mock below is replaced by real signalling later. */
+/** The room backend used by demo mode (MockRoomService). Live calls use LiveRoomService. */
 export interface RoomService {
   createRoom(): Promise<CreateResult>;
   validateRoom(code: string): Promise<ValidateResult>;
