@@ -1,0 +1,78 @@
+/* Interactive state styles for the React components. Each class maps 1:1 to a
+   component variant so it can be ported to Tailwind @apply or cva(). */
+
+/* ── Button ── */
+.cl-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--cl-space-2);
+  min-height: var(--cl-target-min); padding: 0 var(--cl-space-5);
+  border-radius: var(--cl-radius-md); border: var(--cl-border-width) solid transparent;
+  font: var(--cl-weight-semibold) var(--cl-size-md)/1 var(--cl-font-sans);
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background-color var(--cl-duration-fast) var(--cl-ease-gentle),
+              border-color var(--cl-duration-fast) var(--cl-ease-gentle),
+              box-shadow var(--cl-duration-fast) var(--cl-ease-gentle),
+              color var(--cl-duration-fast) var(--cl-ease-gentle);
+}
+.cl-btn--phone { min-height: var(--cl-target-phone); font-size: var(--cl-size-lg); padding: 0 var(--cl-space-6); }
+.cl-btn--block { width: 100%; }
+.cl-btn--primary { background: var(--cl-accent); color: var(--cl-accent-ink); box-shadow: var(--cl-bevel); }
+.cl-btn--primary:hover, .cl-btn--primary.is-hover { background: var(--cl-accent-hover); }
+.cl-btn--primary:active, .cl-btn--primary.is-pressed { background: var(--cl-accent-hover); box-shadow: var(--cl-bevel-sunken); }
+.cl-btn--secondary { background: var(--cl-raised); color: var(--cl-text); border-color: var(--cl-line); box-shadow: var(--cl-bevel); }
+.cl-btn--secondary:hover, .cl-btn--secondary.is-hover { background: var(--cl-hover); border-color: var(--cl-line-strong); }
+.cl-btn--secondary:active, .cl-btn--secondary.is-pressed { background: var(--cl-hover); box-shadow: var(--cl-bevel-sunken); }
+.cl-btn--ghost { background: transparent; color: var(--cl-text-2); }
+.cl-btn--ghost:hover, .cl-btn--ghost.is-hover { background: var(--cl-accent-soft); color: var(--cl-text); }
+.cl-btn--ghost:active, .cl-btn--ghost.is-pressed { background: var(--cl-accent-soft); }
+.cl-btn--danger { background: var(--cl-danger); color: var(--cl-accent-ink); box-shadow: var(--cl-bevel); }
+.cl-btn--danger:hover, .cl-btn--danger.is-hover { background: var(--cl-danger-hover); }
+.cl-btn--danger:active, .cl-btn--danger.is-pressed { background: var(--cl-danger-hover); box-shadow: var(--cl-bevel-sunken); }
+.cl-btn:disabled, .cl-btn[aria-disabled="true"] {
+  background: var(--cl-raised); color: var(--cl-text-3); border-color: transparent; box-shadow: none; cursor: not-allowed;
+}
+.cl-btn--ghost:disabled { background: transparent; }
+
+/* ── Round control (IconButton) ── */
+.cl-ctl { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--cl-text); font: var(--cl-weight-medium) var(--cl-size-xs)/var(--cl-leading-xs) var(--cl-font-sans); min-width: 64px; }
+.cl-ctl__disc {
+  width: var(--cl-control-laptop); height: var(--cl-control-laptop); border-radius: var(--cl-radius-full);
+  display: flex; align-items: center; justify-content: center; position: relative;
+  background: var(--cl-raised); border: var(--cl-border-width) solid var(--cl-line); box-shadow: var(--cl-bevel);
+  transition: background-color var(--cl-duration-fast) var(--cl-ease-gentle), box-shadow var(--cl-duration-fast) var(--cl-ease-gentle);
+}
+.cl-ctl--phone .cl-ctl__disc { width: var(--cl-control-phone); height: var(--cl-control-phone); }
+.cl-ctl--square .cl-ctl__disc { border-radius: var(--cl-radius-md); width: var(--cl-target-min); height: var(--cl-target-min); }
+.cl-ctl:hover .cl-ctl__disc, .cl-ctl.is-hover .cl-ctl__disc { background: var(--cl-hover); }
+.cl-ctl:active .cl-ctl__disc, .cl-ctl.is-pressed .cl-ctl__disc { background: var(--cl-hover); box-shadow: var(--cl-bevel-sunken); }
+.cl-ctl--active .cl-ctl__disc { background: var(--cl-accent-soft); border-color: var(--cl-line); }
+.cl-ctl--active:hover .cl-ctl__disc, .cl-ctl--active.is-hover .cl-ctl__disc { background: rgba(233,162,59,.36); }
+.cl-ctl--off .cl-ctl__disc { background: var(--cl-danger); border-color: transparent; color: var(--cl-accent-ink); }
+.cl-ctl--off:hover .cl-ctl__disc, .cl-ctl--off.is-hover .cl-ctl__disc { background: var(--cl-danger-hover); }
+.cl-ctl--off:active .cl-ctl__disc, .cl-ctl--off.is-pressed .cl-ctl__disc { background: var(--cl-danger-hover); }
+.cl-ctl--leave .cl-ctl__disc { background: var(--cl-danger); border-color: transparent; color: var(--cl-accent-ink); }
+.cl-ctl--leave:hover .cl-ctl__disc, .cl-ctl--leave.is-hover .cl-ctl__disc { background: var(--cl-danger-hover); }
+.cl-ctl--leave:active .cl-ctl__disc, .cl-ctl--leave.is-pressed .cl-ctl__disc { background: var(--cl-danger-hover); }
+.cl-ctl:disabled { cursor: not-allowed; color: var(--cl-text-3); }
+.cl-ctl:disabled .cl-ctl__disc { background: var(--cl-raised); color: var(--cl-text-3); border-color: transparent; box-shadow: none; }
+.cl-ctl:focus-visible, .cl-ctl.is-focus { outline: none; }
+.cl-ctl:focus-visible .cl-ctl__disc, .cl-ctl.is-focus .cl-ctl__disc { outline: var(--cl-border-width-strong) solid var(--cl-focus); outline-offset: var(--cl-focus-offset); }
+
+/* ── Text input ── */
+.cl-input {
+  width: 100%; min-height: var(--cl-target-phone); padding: 0 var(--cl-space-4);
+  background: var(--cl-sunken); color: var(--cl-text);
+  border: var(--cl-border-width) solid var(--cl-line-strong); border-radius: var(--cl-radius-md);
+  box-shadow: var(--cl-bevel-sunken);
+  font: var(--cl-weight-regular) var(--cl-size-md)/1.2 var(--cl-font-sans);
+  transition: border-color var(--cl-duration-fast) var(--cl-ease-gentle), box-shadow var(--cl-duration-fast) var(--cl-ease-gentle);
+}
+.cl-input::placeholder { color: var(--cl-text-3); }
+.cl-input:hover, .cl-input.is-hover { border-color: rgba(245,235,221,.4); }
+.cl-input:focus, .cl-input.is-focus { outline: none; border-color: var(--cl-accent); box-shadow: var(--cl-bevel-sunken), var(--cl-glow-focus); }
+.cl-input--invalid, .cl-input--invalid:hover, .cl-input--invalid.is-hover { border-color: var(--cl-danger-text); }
+.cl-input--code { font: var(--cl-weight-semibold) var(--cl-size-xl)/1 var(--cl-font-sans); letter-spacing: var(--cl-code-tracking); text-transform: uppercase; }
+.cl-input:disabled { background: var(--cl-raised); color: var(--cl-text-3); border-color: transparent; box-shadow: none; cursor: not-allowed; }
+
+/* Forced focus for specimens + real keyboard focus */
+.cl-btn:focus-visible, .cl-btn.is-focus { outline: var(--cl-border-width-strong) solid var(--cl-focus); outline-offset: var(--cl-focus-offset); }
+.cl-ctl.is-focus .cl-ctl__disc { outline: var(--cl-border-width-strong) solid var(--cl-focus); outline-offset: var(--cl-focus-offset); }

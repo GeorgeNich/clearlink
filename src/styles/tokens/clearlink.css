@@ -1,0 +1,110 @@
+/* Clearlink design tokens. Themes are set with data-theme on <html>; dark is the default
+   and "system" resolves via prefers-color-scheme. */
+
+:root,
+[data-theme="dark"] {
+  --cl-bg: #0d131c;
+  --cl-surface: #131b26;
+  --cl-raised: #1a2431;
+  --cl-sunken: #0a0f16;
+  --cl-hover: #212c3b;
+  --cl-line: #253142;
+  --cl-line-strong: #36455a;
+  --cl-text: #e9eef4;
+  --cl-text-2: #aab5c4;
+  --cl-text-3: #8592a4;
+  --cl-accent: #5bc4cc;
+  --cl-accent-hover: #74d0d7;
+  --cl-accent-ink: #062428;
+  --cl-accent-soft: rgba(91, 196, 204, 0.16);
+  --cl-accent-text: #7fd3d9;
+  --cl-danger: #d2493f;
+  --cl-danger-hover: #de5a50;
+  --cl-danger-ink: #ffffff;
+  --cl-danger-soft: rgba(226, 96, 86, 0.16);
+  --cl-danger-text: #f2958c;
+  --cl-warn-soft: rgba(224, 166, 58, 0.16);
+  --cl-warn-text: #ebc072;
+  --cl-ok-soft: rgba(63, 182, 139, 0.16);
+  --cl-ok-text: #72d2ab;
+  --cl-tile: #18212d;
+  --cl-tile-line: rgba(255, 255, 255, 0.06);
+  --cl-tile-text: #b4bfcd;
+  --cl-focus: #7fd3d9;
+  --cl-scrim: rgba(4, 8, 12, 0.62);
+  --cl-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] {
+  --cl-bg: #f4f6f8;
+  --cl-surface: #ffffff;
+  --cl-raised: #ffffff;
+  --cl-sunken: #edf0f3;
+  --cl-hover: #e8ecf1;
+  --cl-line: #dce1e7;
+  --cl-line-strong: #c2cad4;
+  --cl-text: #101823;
+  --cl-text-2: #465264;
+  --cl-text-3: #5e6a7b;
+  --cl-accent: #0e7680;
+  --cl-accent-hover: #0b6670;
+  --cl-accent-ink: #ffffff;
+  --cl-accent-soft: rgba(14, 118, 128, 0.1);
+  --cl-accent-text: #0a6770;
+  --cl-danger: #c23b32;
+  --cl-danger-hover: #ad3229;
+  --cl-danger-ink: #ffffff;
+  --cl-danger-soft: rgba(194, 59, 50, 0.1);
+  --cl-danger-text: #a8322a;
+  --cl-warn-soft: rgba(176, 116, 10, 0.12);
+  --cl-warn-text: #80540a;
+  --cl-ok-soft: rgba(23, 115, 79, 0.1);
+  --cl-ok-text: #17734f;
+  --cl-tile: #1e2834; /* video tiles stay dark in both themes */
+  --cl-tile-line: rgba(0, 0, 0, 0.04);
+  --cl-tile-text: #b4bfcd;
+  --cl-focus: #0e7680;
+  --cl-scrim: rgba(16, 24, 35, 0.45);
+  --cl-shadow: 0 16px 40px rgba(16, 24, 35, 0.14);
+}
+
+:root {
+  /* Person colours. Text on them is #0D131C. */
+  --cl-person-amber: #d9ae62; /* local user */
+  --cl-person-rose: #dd93a0;
+  --cl-person-sage: #8fbf9f;
+  --cl-person-dusk: #8faee0;
+  --cl-person-plum: #b79ad6;
+
+  --cl-font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --cl-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --cl-radius-chip: 7px;
+  --cl-radius-control: 10px;
+  --cl-radius-callbtn: 12px;
+  --cl-radius-tile: 14px;
+  --cl-radius-tile-sm: 10px;
+  --cl-radius-card: 16px;
+  --cl-radius-sheet: 18px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cl-focus);
+  outline-offset: 2px;
+}
+
+@keyframes cl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+  }
+}

@@ -1,0 +1,21 @@
+/* Type weights, sizes and line heights. */
+:root {
+  --cl-weight-regular: 400;
+  --cl-weight-medium: 500;
+  --cl-weight-semibold: 600;
+  --cl-weight-bold: 700;
+
+  /* Scale — size / line-height */
+  --cl-leading-xs: 20px;   /* minimum: helper, timestamps, tile labels */
+  --cl-leading-sm: 22px;   /* compact chat, secondary UI */
+  --cl-leading-md: 24px;   /* body, chat, inputs, buttons (laptop) */
+  --cl-leading-lg: 26px;   /* large buttons, lead text */
+  --cl-size-xl: 22px;   --cl-leading-xl: 28px;   /* panel titles */
+
+  /* Room code */
+  --cl-code-tracking: 0.08em;
+
+  /* Semantic */
+  --cl-text-chat: var(--cl-size-md);
+  --cl-text-body: var(--cl-size-md);
+}

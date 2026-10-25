@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.local-tls/
+.DS_Store
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key

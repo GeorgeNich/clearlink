@@ -1,0 +1,19 @@
+/* Opt-in base. Apply .cl-root to the app shell (or body). */
+.cl-root, .cl-card-body {
+  background: var(--cl-bg);
+  color: var(--cl-text);
+  font-family: var(--cl-font-sans);
+  font-size: var(--cl-text-body);
+  line-height: var(--cl-leading-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.cl-card-body { margin: 0; padding: 20px; box-sizing: border-box; min-height: 100vh; }
+.cl-root *, .cl-card-body * { box-sizing: border-box; }
+.cl-root a, .cl-card-body a { color: var(--cl-accent-text); text-underline-offset: 3px; }
+.cl-root a:hover, .cl-card-body a:hover { color: var(--cl-accent-hover); }
+.cl-root :focus-visible, .cl-card-body :focus-visible {
+  outline: var(--cl-border-width-strong) solid var(--cl-focus);
+  outline-offset: var(--cl-focus-offset);
+}
+.cl-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

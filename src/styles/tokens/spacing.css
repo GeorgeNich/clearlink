@@ -1,0 +1,27 @@
+/* Spacing, radii, borders, sizes. 4px base. */
+:root {
+  --cl-space-2: 8px;
+  --cl-space-3: 12px;
+  --cl-space-4: 16px;
+  --cl-space-5: 20px;
+  --cl-space-6: 24px;
+
+  --cl-radius-sm: 6px;    /* badges, name chips */
+  --cl-radius-md: 10px;   /* buttons, inputs */
+  --cl-radius-lg: 14px;   /* video tiles, toasts, banners */
+  --cl-radius-xl: 20px;   /* cards, modals, control bar */
+  --cl-radius-2xl: 28px;  /* bottom sheet top corners */
+  --cl-radius-full: 999px;
+
+  --cl-border-width: 1px;
+  --cl-border-width-strong: 2px;  /* speaking ring, focus ring */
+  --cl-focus-offset: 2px;
+
+  /* Hit targets — nothing tappable below 48px */
+  --cl-target-min: 48px;
+  --cl-target-phone: 52px;
+
+  --cl-panel-width: 360px;    /* laptop side panel */
+  --cl-sheet-max: 80%;        /* phone bottom sheet height */
+  --cl-modal-width: 440px;
+}
