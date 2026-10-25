@@ -17,10 +17,7 @@ Audio and video go straight between the browsers over WebRTC. A small Node serve
 - In-call chat
 - Desktop and phone layouts, dark and light themes, reduced-motion support
 
-<p>
-  <img src="docs/media/welcome.png" alt="The Clearlink start screen" width="74%">
-  <img src="docs/media/phone.png" alt="A Clearlink call on a phone" width="23%">
-</p>
+![The Clearlink start screen, and a call on a phone](docs/media/start-and-phone.png)
 
 ## Quick start
 
