@@ -1,171 +1,120 @@
-# clearlink
+# Clearlink
 
-![Clearlink: Video calls that start with a link. Five-person desktop room with staged participants and cameras off.](docs/media/clearlink-hero.png)
+Video calls that start with a link. Create a room, send the link, and talk in the browser: up to five people, no accounts, nothing to install.
 
-Create a room, send the link, and talk in your browser. Clearlink runs on your own computer, holds calls for up to five people, and sends audio and video directly between participants rather than through a server.
+Audio and video go straight between the browsers over WebRTC. A small Node server introduces people to each other and passes chat along, but never carries the call.
 
-**No accounts · Nothing for guests to install · Screen sharing · In-call chat · Dark and light themes**
+![A three-person Clearlink call with the chat panel open](docs/media/call.png)
 
 ![MIT licence](https://img.shields.io/badge/licence-MIT-5BC4CC) ![Node.js 20+](https://img.shields.io/badge/node-20%2B-5BC4CC)
 
-[Run locally](#run-locally) · [How it works](#how-it-works) · [Share with other devices](#share-with-other-devices) · [Limitations](#limitations) · [Security](SECURITY.md) · [Licence](LICENSE)
+## Features
 
-## Run locally
+- Invite links and eight-character room codes, up to five people per room
+- Camera and microphone preview, device switching, mute and camera controls
+- Group and spotlight views, with a self-view you can drag or hide
+- Screen sharing on desktop
+- In-call chat
+- Desktop and phone layouts, dark and light themes, reduced-motion support
 
-Requires [Node.js](https://nodejs.org) 20 or later. Download or clone this repository, then from the project directory:
+<p>
+  <img src="docs/media/welcome.png" alt="The Clearlink start screen" width="74%">
+  <img src="docs/media/phone.png" alt="A Clearlink call on a phone" width="23%">
+</p>
+
+## Quick start
+
+Needs [Node.js](https://nodejs.org) 20 or later.
 
 ```sh
 npm install
+npm start        # http://localhost:3001, for calls on this computer
+npm run share    # a public https link, for calls with other devices
 ```
 
-Then pick one of two ways to run it:
+Both commands build the app first. Press Ctrl+C to stop.
 
-| Command | Who can join | Use it to |
-| --- | --- | --- |
-| `npm start` | Only you, on this computer | Try the app, test with two browser tabs, record demos |
-| `npm run share` | Anyone you send the link to | Call people on other devices ([needs `cloudflared`](#share-with-other-devices)) |
+`npm start` is enough to try it with two browser tabs. To call someone on another device, use `npm run share`. It needs Cloudflare's free [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (on macOS, `brew install cloudflared`). Browsers only allow camera access on `localhost` or HTTPS, so other devices need the HTTPS address it prints.
 
-Both build the app first. Press Ctrl+C to stop either one.
-
-With `npm start`, open **http://localhost:3001**, create a room, enter a display name and check your camera and microphone. People on other devices cannot use this address, because their `localhost` points to their own device; use `npm run share` instead.
-
-If port 3001 is already in use:
-
-```sh
-PORT=3002 npm start
-```
-
-The server binds to `127.0.0.1` by default. Localhost supports camera and microphone access; a plain HTTP address on your local network normally does not.
-
-## Features
-
-- Invitation links and eight-character room codes, with up to five participants.
-- Camera/microphone preview and device selection, mute and camera controls.
-- Group view, spotlight, draggable self-preview and preview hiding.
-- Desktop screen sharing, with camera restoration when sharing ends.
-- In-call chat, invitation sharing, connection recovery, leave and rejoin while the room remains open.
-- Responsive desktop and phone layouts, labelled controls and reduced-motion support.
-- Dark, light and system appearance, with locally bundled IBM Plex fonts.
-
-## A look inside
-
-![Clearlink desktop and phone call layouts with five staged participants and cameras off.](docs/media/clearlink-desktop-mobile.png)
-
-*The same room on desktop and at a phone-sized viewport. Fictional participants; cameras and microphones off.*
-
-![Clearlink chat panel showing two staged messages beside the call.](docs/media/clearlink-chat.png)
-
-*Staged conversation in the running app. Chat is forwarded by the Node room server to people currently present.*
+If port 3001 is taken, use `PORT=3002 npm start`.
 
 ## How it works
 
-Clearlink has two traffic paths: browsers exchange call media directly, while the Node server coordinates the room and delivers chat. The diagram shows two participants; each browser establishes a separate media connection to each other participant.
+![Browsers exchange media directly. The tunnel connects them to the Node room server; STUN helps them find a direct route.](docs/media/architecture.svg)
 
-![Browsers exchange call media directly. Cloudflare Tunnel connects them to the Node room server on the host computer; Cloudflare STUN separately helps discover connection addresses.](docs/media/architecture.svg)
+1. **Node serves the app and keeps track of rooms.** Rooms live in memory, hold up to five people, and close when everyone leaves.
+2. **Browsers swap connection details through Node.** Offers, answers and network candidates travel over long-polling requests.
+3. **STUN finds a direct route.** Each browser learns its public address from Cloudflare's STUN server, then the browsers test routes until one works.
+4. **The call goes browser to browser.** Audio, video and screen sharing are encrypted and never pass through Node or the tunnel. Chat goes through Node, to whoever is in the room at the time.
 
-*Shown: the local hosting setup with Cloudflare Tunnel. Other deployments can use their own HTTPS proxy.*
+Every person connects to every other person (a full mesh), which is why rooms stop at five. A few details that keep calls stable:
 
-**Between browsers:** encrypted audio, video and screen sharing. **Through Node:** room membership, signalling and chat. **STUN:** helps discover direct routes; it never relays media. The HTTPS proxy or tunnel is explained in [Share with other devices](#share-with-other-devices).
+- **One offerer per pair.** The browser with the lower ID always starts the connection, so two browsers never collide by offering at once.
+- **Late camera results are discarded.** Each camera or microphone request is numbered, and anything that arrives after you've left or switched devices is stopped straight away, so the camera light never stays on.
+- **Retry restarts the route search** (an ICE restart) without dropping the call.
 
-1. **Load the app.** Node serves the built app files. Each participant runs the app in their own browser. A Cloudflare tunnel is one way to give a locally hosted instance a public HTTPS address.
-2. **Join a room.** Node tracks participants, enforces the five-person limit and announces joins, departures and microphone/camera status.
-3. **Exchange connection details.** Browsers send signalling messages through Node. Cloudflare STUN helps each browser discover its public-facing network address; browsers exchange possible routes and test connectivity.
-4. **Talk directly.** Audio, video and screen sharing use browser-to-browser WebRTC connections. Neither the Node room server nor the Cloudflare tunnel carries those media streams in the default configuration.
-5. **Keep the room updated.** Browsers receive room events through repeated long-poll requests. Chat text goes through Node, which forwards it to participants currently present.
+## Configuration
 
-The tunnel and STUN are separate services: **the tunnel makes the app reachable; STUN helps browsers find direct media routes.** STUN does not relay media. Clearlink uses a server even though its media is peer-to-peer.
-
-Room membership, session tokens and pending events live in server memory. Chat may wait briefly in a delivery queue, but there is no persistent chat history or replay for later arrivals. Empty rooms are deleted and inactive sessions expire. Restarting Node loses room state. Keep it running throughout calls: membership, chat and connection recovery depend on it.
-
-## Share with other devices
-
-To call people on other devices, install Cloudflare's free [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) tool (on macOS: `brew install cloudflared`), then run:
-
-```sh
-npm run share
-```
-
-This builds the app, starts the server on a free port and opens a temporary Cloudflare tunnel. Open the public `https://….trycloudflare.com` address it prints, create a room, and send the invitation from there. Press Ctrl+C to stop sharing.
-
-The public address exposes the locally hosted app. Your computer, Node and the tunnel must stay running. This is temporary hosting, not a permanent deployment; the tunnel does not start automatically.
-
-For a persistent deployment, build the app and run **one Node process** behind trusted HTTPS. Keep `/api` on the same origin, do not cache it, and allow long-poll requests to remain open for at least 35 seconds. Node uses HTTP locally; the HTTPS proxy or tunnel provides the public entry point.
-
-| Setting | Default | Purpose |
+| Variable | Default | Purpose |
 | --- | --- | --- |
-| `PORT` | `3001` | Node listener port. |
-| `HOST` | `127.0.0.1` | Listener address. Use `0.0.0.0` only when required by the hosting environment. |
-| `ICE_SERVERS_JSON` | Cloudflare STUN | Replaces the complete list of STUN/TURN servers supplied to browsers. |
+| `PORT` | `3001` | Port for the Node server |
+| `HOST` | `127.0.0.1` | Address to listen on. Use `0.0.0.0` only if your host requires it |
+| `ICE_SERVERS_JSON` | Cloudflare STUN | The full list of STUN/TURN servers given to browsers |
 
-The default STUN address is `stun:stun.cloudflare.com:3478`. To supply the same configuration explicitly:
+To add a TURN relay, include it in `ICE_SERVERS_JSON` with short-lived credentials. Browsers receive these credentials, so never use an admin secret:
 
 ```sh
-ICE_SERVERS_JSON='[{"urls":"stun:stun.cloudflare.com:3478"}]' npm start
+ICE_SERVERS_JSON='[{"urls":"stun:stun.cloudflare.com:3478"},{"urls":"turn:turn.example.com:3478","username":"…","credential":"…"}]' npm start
 ```
 
-An explicit `ICE_SERVERS_JSON='[]'` disables external STUN/TURN for isolated testing; it does not remove the Node server and may reduce connectivity. TURN configuration is supported, but deploying a relay is deferred. If adding one later, use scoped, short-lived credentials: ICE credentials are sent to participating browsers, so never supply an administration secret.
-
-## Privacy and security boundaries
-
-- WebRTC encrypts call media in transit. The application does not record it; participants can independently record or copy what they receive.
-- Chat passes through Node as readable text at the server. HTTPS protects browser-to-server transport; it does not provide end-to-end encryption of chat. A TLS-terminating proxy such as the public tunnel is also part of the trust boundary.
-- Anyone with a room invitation can join while space remains. There are no accounts, waiting rooms, host approval or moderator controls. Treat the invitation as room access.
-- There is no database or persistent chat history. STUN can observe public-facing network addresses, and direct peers may learn one another’s connection addresses.
-- Membership checks, random session tokens and room codes, basic rate limits, request-size limits and cross-site request rejection provide safeguards. They do not constitute a security audit.
+To deploy permanently, run one Node process behind an HTTPS proxy. Keep `/api` on the same origin, don't cache it, and allow requests to stay open for at least 35 seconds.
 
 ## Limitations
 
-- **Direct connections only by default.** Without TURN, some networks cannot exchange media even when loading the app and joining a room succeed.
-- **Five people per room.** Each browser sends media to the others; bandwidth and device performance affect call quality.
-- **One server process.** Rooms are in memory and are not shared across replicas or preserved across restarts.
-- **Browser coverage is limited.** Automated checks use Chrome with simulated capture devices. They do not establish Safari/iOS compatibility, physical device quality or universal internet connectivity.
-- **Diagnostics are simulated.** `/test` is a demonstration screen, not a real device or network test.
+- **No relay by default.** Networks that block direct connections, such as some workplace and university networks, can't connect without TURN.
+- **Five people per room,** because each browser sends its media to every other person.
+- **One server process.** Rooms are held in memory and are lost on restart.
+- **Tested in Chrome.** The automated tests don't cover Safari or iOS.
+- **The connection check at `/test` is simulated.** It shows what a real check will look like, not your actual network.
 
-## Development and demo mode
-
-Run these in separate terminals:
+## Development
 
 ```sh
-npm run server
+npm run server   # Node on port 3001
+npm run dev      # Vite dev server, proxying /api to Node
 ```
+
+Open `/?demo` to step through simulated room states without a second device.
+
+`npm run lan:setup` and `npm run lan` serve the app over HTTPS on your local network with a test certificate, for trying it on a phone at home.
+
+## Tests
 
 ```sh
-npm run dev
+npm test               # 12 Node tests
+npm run test:browser   # Playwright + Google Chrome
 ```
 
-Open the URL printed by Vite. Its `/api` proxy targets Node on port 3001; changing the backend port also requires updating that proxy in `vite.config.ts`.
+The Node tests cover room membership and capacity, signalling, chat, ICE configuration and the camera-timing cases above. The browser test opens five Chrome sessions with simulated cameras, checks that real audio and video bytes arrive at every participant, confirms a sixth person is turned away, and covers chat, mute, leaving and rejoining. It needs Playwright: `npm install --no-save --package-lock=false playwright`.
 
-Open `/?demo` to explore simulated room states. Demo mode can still use your actual camera if **My camera** is selected; choose **Simulated** for a preview without capture.
-
-The optional `npm run lan:setup` and `npm run lan` scripts create and serve local test certificates. Other devices require manual certificate trust; these scripts are not a public HTTPS deployment. Private keys stay in ignored `.local-tls/`.
-
-## Validation
-
-```sh
-npm run build
-npm test
-npm run test:browser
-```
-
-The 12 Node tests cover media lifecycle races, ICE configuration, room membership, signalling isolation, chat and room lifecycle. Browser tests use Google Chrome and Playwright with fake capture devices, verify actual received audio/video bytes in five browser sessions, enforce the sixth-person limit, and check chat, mute, camera, capture cleanup and rejoin. They also verify theme switching, code validation, settings access on desktop/mobile and real invitation URLs.
-
-Browser tests require Playwright and Google Chrome. Install Playwright locally using `npm install --no-save --package-lock=false playwright`, or set `PLAYWRIGHT_MODULE` to an existing module path. Screenshots go to `/tmp/clearlink-browser-test` (override with `TEST_OUTPUT_DIR`).
-
-Calls have been manually confirmed between devices on different networks, connected directly via STUN through the Cloudflare tunnel. Fake-device tests do not establish physical microphone quality, Safari/iOS behaviour, screen-picker interactions or all internet network combinations.
+Calls have also been tested by hand between devices on different networks, including mobile data, connecting directly with no relay.
 
 ## Project structure
 
-- `src/screens/`: journeys and call panels.
-- `src/components/`: accessible UI, participant tiles and media rendering.
-- `src/state/useApp.ts`: call state and actions.
-- `src/services/`: WebRTC sessions, browser capture, invitations and demo services.
-- `src/styles/tokens/clearlink.css`: design tokens.
-- `src/styles/clearlink.css`: layout and semantic styling.
-- `server/`: in-memory rooms, signalling, chat, ICE configuration and optional LAN tooling.
-- `tests/`: media, room and browser validation.
+```
+server/            Node room server, signalling, chat, sharing and LAN scripts
+src/services/      WebRTC connections, camera and microphone, demo-mode services
+src/state/         app state and actions
+src/screens/       start screen, camera check, call, chat, settings
+src/components/    buttons, video tiles, control bar, panels
+src/styles/        design tokens and styles
+tests/             Node and browser tests
+```
 
-IBM Plex fonts are bundled from Fontsource under their included OFL licenses. Icons use locally rendered SVG paths. No font CDN is contacted by the running application.
+Fonts are IBM Plex, bundled locally under the OFL. The app makes no requests to font or icon services.
 
-## Licence
+## Security and licence
+
+See [SECURITY.md](SECURITY.md) for what Clearlink does and doesn't protect, and how to report an issue.
 
 [MIT](LICENSE) © 2026 George Nicholson
