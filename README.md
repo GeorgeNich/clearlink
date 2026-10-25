@@ -56,19 +56,12 @@ Every person connects to every other person (a full mesh), which is why rooms st
 | --- | --- | --- |
 | `PORT` | `3001` | Port for the Node server |
 | `HOST` | `127.0.0.1` | Address to listen on. Use `0.0.0.0` only if your host requires it |
-| `ICE_SERVERS_JSON` | Cloudflare STUN | The full list of STUN/TURN servers given to browsers |
-
-To add a TURN relay, include it in `ICE_SERVERS_JSON` with short-lived credentials. Browsers receive these credentials, so never use an admin secret:
-
-```sh
-ICE_SERVERS_JSON='[{"urls":"stun:stun.cloudflare.com:3478"},{"urls":"turn:turn.example.com:3478","username":"…","credential":"…"}]' npm start
-```
 
 To deploy permanently, run one Node process behind an HTTPS proxy. Keep `/api` on the same origin, don't cache it, and allow requests to stay open for at least 35 seconds.
 
 ## Limitations
 
-- **No relay by default.** Networks that block direct connections, such as some workplace and university networks, can't connect without TURN.
+- **Direct calls only.** Some workplace and university networks block direct connections, so calls there won't connect.
 - **Five people per room,** because each browser sends its media to every other person.
 - **One server process.** Rooms are held in memory and are lost on restart.
 - **Tested in Chrome.** The automated tests don't cover Safari or iOS.
@@ -91,7 +84,7 @@ npm run test:browser   # Playwright + Google Chrome
 
 The Node tests cover room membership and capacity, signalling, chat, ICE configuration and the camera-timing cases above. The browser test opens five Chrome sessions with simulated cameras, checks that real audio and video bytes arrive at every participant, confirms a sixth person is turned away, and covers chat, mute, leaving and rejoining. It needs Playwright: `npm install --no-save --package-lock=false playwright`.
 
-Calls have also been tested by hand between devices on different networks, including mobile data, connecting directly with no relay.
+Calls have also been tested by hand between devices on different networks, including mobile data, connecting directly.
 
 ## Project structure
 

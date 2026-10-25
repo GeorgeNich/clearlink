@@ -4,9 +4,9 @@ Clearlink is a self-hostable WebRTC application, not an audited calling service.
 
 Media is encrypted in transit by WebRTC. Signalling and chat require trusted HTTPS for remote use. Room invitations act as access: anyone with the link or code can join a non-full room. There is no account authentication or host approval.
 
-The server does not persist chat or record media. Participants may record, screenshot or copy independently. Public STUN observes public-facing network addresses; direct peers may learn each other’s connection addresses. TURN is optional and is not configured by default.
+The server does not persist chat or record media. Participants may record, screenshot or copy independently. Public STUN observes public-facing network addresses; direct peers may learn each other’s connection addresses.
 
-Use one server process behind HTTPS, keep its dependencies updated, and supply only scoped TURN credentials. Do not expose local certificate private keys or administrative secrets. Basic rate limiting is not comprehensive abuse protection.
+Use one server process behind HTTPS and keep its dependencies updated. Do not expose local certificate private keys or administrative secrets. Basic rate limiting is not comprehensive abuse protection.
 
 ## Dependency status
 
