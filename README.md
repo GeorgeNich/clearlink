@@ -50,30 +50,12 @@ Every person connects to every other person (a full mesh), which is why rooms st
 - **Late camera results are discarded.** Each camera or microphone request is numbered, and anything that arrives after you've left or switched devices is stopped straight away, so the camera light never stays on.
 - **Retry restarts the route search** (an ICE restart) without dropping the call.
 
-## Configuration
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `PORT` | `3001` | Port for the Node server |
-| `HOST` | `127.0.0.1` | Address to listen on. Use `0.0.0.0` only if your host requires it |
-
-To deploy permanently, run one Node process behind an HTTPS proxy. Keep `/api` on the same origin, don't cache it, and allow requests to stay open for at least 35 seconds.
-
 ## Limitations
 
 - **Direct calls only.** Some workplace and university networks block direct connections, so calls there won't connect.
 - **Five people per room,** because each browser sends its media to every other person.
 - **One server process.** Rooms are held in memory and are lost on restart.
 - **Tested in Chrome.** The automated tests don't cover Safari or iOS.
-
-## Development
-
-```sh
-npm run server   # Node on port 3001
-npm run dev      # Vite dev server, proxying /api to Node
-```
-
-`npm run lan:setup` and `npm run lan` serve the app over HTTPS on your local network with a test certificate, for trying it on a phone at home.
 
 ## Tests
 
@@ -82,14 +64,12 @@ npm test               # 12 Node tests
 npm run test:browser   # Playwright + Google Chrome
 ```
 
-The Node tests cover room membership and capacity, signalling, chat, ICE configuration and the camera-timing cases above. The browser test opens five Chrome sessions with simulated cameras, checks that real audio and video bytes arrive at every participant, confirms a sixth person is turned away, and covers chat, mute, leaving and rejoining. It needs Playwright: `npm install --no-save --package-lock=false playwright`.
-
-Calls have also been tested by hand between devices on different networks, including mobile data, connecting directly.
+The Node tests cover rooms, signalling, chat and camera timing. The browser test runs a five-person call in Chrome and checks that real audio and video reach everyone. Calls have also been tested by hand across different networks, including mobile data.
 
 ## Project structure
 
 ```
-server/            Node room server, signalling, chat, sharing and LAN scripts
+server/            Node room server, signalling, chat and sharing
 src/services/      WebRTC connections, camera and microphone, invite sharing
 src/state/         app state and actions
 src/screens/       start screen, camera check, call, chat, settings
@@ -97,8 +77,6 @@ src/components/    buttons, video tiles, control bar, panels
 src/styles/        design tokens and styles
 tests/             Node and browser tests
 ```
-
-Fonts are IBM Plex, bundled locally under the OFL. The app makes no requests to font or icon services.
 
 ## Security and licence
 

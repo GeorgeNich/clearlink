@@ -18,9 +18,7 @@
     "preshare": "npm run build",
     "share": "node server/share.mjs",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs",
-    "lan:setup": "node server/lan-setup.mjs",
-    "lan": "node server/lan.mjs"
+    "test:browser": "node tests/browser.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

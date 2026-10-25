@@ -1,17 +1,18 @@
 # Security
 
-Clearlink is a self-hostable WebRTC application, not an audited calling service.
+Clearlink is a personal project, not an audited calling service.
 
-Media is encrypted in transit by WebRTC. Signalling and chat require trusted HTTPS for remote use. Room invitations act as access: anyone with the link or code can join a non-full room. There is no account authentication or host approval.
+## What it protects
 
-The server does not persist chat or record media. Participants may record, screenshot or copy independently. Public STUN observes public-facing network addresses; direct peers may learn each other’s connection addresses.
+- Audio, video and screen sharing are encrypted between browsers by WebRTC and never pass through the server.
+- The server keeps rooms and chat in memory only. Nothing is stored or recorded.
 
-Use one server process behind HTTPS and keep its dependencies updated. Do not expose local certificate private keys or administrative secrets. Basic rate limiting is not comprehensive abuse protection.
+## What it doesn't
 
-## Dependency status
-
-As of October 2026, `npm audit` reports zero advisories. Tailwind 3 depends on an older `postcss-selector-parser`, so `package.json` overrides it to the patched 7.x release; the built output is unchanged.
+- Anyone with a room link or code can join while there's space. There are no accounts or host approval.
+- People in a call can see each other's network addresses, as with any direct WebRTC call.
+- Anyone in a call can record or screenshot it themselves.
 
 ## Reporting
 
-Please report security issues privately through GitHub: open this repository's **Security** tab and choose **Report a vulnerability**. Do not open a public issue for a vulnerability, and avoid posting credentials, session tokens or private call details anywhere public.
+Please report security issues privately through GitHub: open this repository's **Security** tab and choose **Report a vulnerability**. Don't open a public issue for a vulnerability.

@@ -127,9 +127,6 @@ export function Welcome({ st, a }: Props) {
       )}
       <footer className="cl-footer">
         <span>Audio and video use WebRTC, encrypted in transit.</span>
-        <a href="/self-hosting.html" target="_blank" rel="noreferrer">
-          Self-hosting guide ↗
-        </a>
       </footer>
     </div>
   );
