@@ -6,7 +6,8 @@ Audio and video go straight between the browsers over WebRTC. A small Node serve
 
 ![A three-person Clearlink call with the chat panel open](docs/media/call.png)
 
-![MIT licence](https://img.shields.io/badge/licence-MIT-5BC4CC)
+[![CI](https://github.com/GeorgeNich/clearlink/actions/workflows/ci.yml/badge.svg)](https://github.com/GeorgeNich/clearlink/actions/workflows/ci.yml) ![Licence](https://img.shields.io/badge/licence-All%20Rights%20Reserved-5BC4CC)
+
 ## Features
 
 - Invite links and eight-character room codes, up to five people per room
@@ -88,4 +89,4 @@ tests/             Node and browser tests
 
 See [SECURITY.md](SECURITY.md) for what Clearlink does and doesn't protect, and how to report an issue.
 
-[MIT](LICENSE) © 2026 George Nicholson
+[Copyright and licence](LICENSE) © 2026 George Nicholson. All rights reserved.
