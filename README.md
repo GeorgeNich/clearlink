@@ -6,8 +6,7 @@ Audio and video go straight between the browsers over WebRTC. A small Node serve
 
 ![A three-person Clearlink call with the chat panel open](docs/media/call.png)
 
-![MIT licence](https://img.shields.io/badge/licence-MIT-5BC4CC) ![Node.js 20+](https://img.shields.io/badge/node-20%2B-5BC4CC)
-
+![MIT licence](https://img.shields.io/badge/licence-MIT-5BC4CC)
 ## Features
 
 - Invite links and eight-character room codes, up to five people per room
@@ -44,11 +43,18 @@ If port 3001 is taken, use `PORT=3002 npm start`.
 3. **STUN finds a direct route.** Each browser learns its public address from Cloudflare's STUN server, then the browsers test routes until one works.
 4. **The call goes browser to browser.** Audio, video and screen sharing are encrypted and never pass through Node or the tunnel. Chat goes through Node, to whoever is in the room at the time.
 
-Every person connects to every other person (a full mesh), which is why rooms stop at five. A few details that keep calls stable:
+Every person connects to every other person (a full mesh), which is why rooms stop at five.
 
-- **One offerer per pair.** The browser with the lower ID always starts the connection, so two browsers never collide by offering at once.
-- **Late camera results are discarded.** Each camera or microphone request is numbered, and anything that arrives after you've left or switched devices is stopped straight away, so the camera light never stays on.
-- **Retry restarts the route search** (an ICE restart) without dropping the call.
+## Architecture & engineering
+
+Clearlink is built as a hands-on exploration of real-time peer-to-peer protocols, avoiding external calling SDKs, heavy media servers (SFUs), or third-party backend frameworks. A few key engineering decisions:
+
+- **Deterministic negotiation:** In peer-to-peer WebRTC meshes, competing offers can cause negotiation collisions (“glare”). Clearlink assigns offer ownership deterministically: the browser with the lower peer ID initiates offers, including ICE restarts, while per-peer queues sequence negotiation operations.
+- **Generational hardware management:** Asynchronous camera and microphone requests can race with user navigation, causing capture to outlive the screen that requested it. Generation tokens and per-device request counters ensure tracks returned by superseded requests are stopped immediately upon arrival.
+- **Zero-dependency signalling server:** The backend uses native Node.js modules (`node:http`, `node:crypto`) with in-memory rooms and event queues over HTTP long polling. No Express, Socket.io or external database, and no application-level persistence of call records or chat history.
+- **Independent media acquisition:** Video and audio are acquired independently, allowing an available camera or microphone to remain usable when the other device is absent or permission is denied.
+- **Retry with ICE restart:** Users can retry failed connections through fresh ICE negotiation without leaving and rejoining the room. The retry retains existing peer connections, media settings and room membership, provided the server session remains valid.
+- **Scope & deployment:** Clearlink is a self-hostable technical showcase focused on direct browser-to-browser media, temporary rooms and on-demand sharing (`npm run share`). TURN is deliberately omitted from this iteration to explore direct connectivity; successful calls demonstrate this on the networks tested, while some networks require a relay. Each operator runs and controls their own instance.
 
 ## Limitations
 
