@@ -16,8 +16,7 @@ export function RemoteAudio({
   const [speakerError, setSpeakerError] = useState(false);
   useEffect(() => {
     const audio = ref.current as
-      | (HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> })
-      | null;
+      (HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }) | null;
     if (audio?.setSinkId)
       void audio
         .setSinkId(speaker)
